@@ -5,3 +5,4 @@ GRANT ALL PRIVILEGES ON DATABASE eventsync_db TO eventsync_user;
 
 # after "\c eventsync_db"
 GRANT ALL ON SCHEMA public TO eventsync_user;
+ALTER ROLE eventsync_user CREATEDB;
