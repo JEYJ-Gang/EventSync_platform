@@ -15,6 +15,8 @@ model Event {
   location    String?   @db.VarChar(150)
 
   sessions    Session[]
+
+  @@map("event")
 }
 
 model Room {
@@ -23,6 +25,8 @@ model Room {
   capacity    Int?
 
   sessions    Session[]
+
+  @@map("room")
 }
 
 model Speaker {
@@ -34,6 +38,8 @@ model Speaker {
   external_link String?   @db.Text
 
   intervenes    Intervene[]
+
+  @@map("speaker")
 }
 
 model Session {
@@ -52,6 +58,8 @@ model Session {
 
   questions       Question[]
   intervenes      Intervene[]
+
+  @@map("session")
 }
 
 model Question {
@@ -63,6 +71,8 @@ model Question {
 
   id_session          Int?
   session             Session?  @relation(fields: [id_session], references: [id_session], onDelete: SetNull)
+
+  @@map("question")
 }
 
 model Intervene {
@@ -73,4 +83,6 @@ model Intervene {
   speaker     Speaker   @relation(fields: [id_speaker], references: [id_speaker], onDelete: Cascade)
 
   @@id([id_session, id_speaker])
+
+  @@map("intervene")
 }
