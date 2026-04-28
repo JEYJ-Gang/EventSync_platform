@@ -1,9 +1,77 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Event {
+  id_event    Int       @id @default(autoincrement())
+  title       String    @db.VarChar(20)
+  description String?   @db.Text
+  start_date  DateTime?
+  end_date    DateTime?
+  location    String?   @db.VarChar(20)
+
+  sessions    Session[]
+}
+
+model Room {
+  id_room     Int       @id @default(autoincrement())
+  name        String    @db.VarChar(20)
+  capacity    Int?
+
+  sessions    Session[]
+}
+
+model Speaker {
+  id_speaker    Int       @id @default(autoincrement())
+  first_name    String    @db.VarChar(150)
+  last_name     String    @db.VarChar(150)
+  photo_url     String?   @db.Text
+  biography     String?   @db.Text
+  external_link String?   @db.Text
+
+  intervenes    Intervene[]
+}
+
+model Session {
+  id_session      Int       @id @default(autoincrement())
+  title           String    @db.VarChar(20)
+  description     String?   @db.Text
+  start_time      DateTime? @db.Time
+  end_time        DateTime? @db.Time
+  max_participant Int?
+
+  id_room         Int
+  room            Room      @relation(fields: [id_room], references: [id_room])
+
+  id_event        Int
+  event           Event     @relation(fields: [id_event], references: [id_event], onDelete: Cascade)
+
+  questions       Question[]
+  intervenes      Intervene[]
+}
+
+model Question {
+  id_question         Int       @id @default(autoincrement())
+  content             String    @db.Text
+  author_name         String?   @db.VarChar(50)
+  upvote              Int       @default(0)
+  creation_datetime   DateTime  @default(now())
+
+  id_session          Int?
+  session             Session?  @relation(fields: [id_session], references: [id_session], onDelete: SetNull)
+}
+
+model Intervene {
+  id_session  Int
+  session     Session   @relation(fields: [id_session], references: [id_session], onDelete: Cascade)
+
+  id_speaker  Int
+  speaker     Speaker   @relation(fields: [id_speaker], references: [id_speaker], onDelete: Cascade)
+
+  @@id([id_session, id_speaker])
 }
