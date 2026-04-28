@@ -4,23 +4,22 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Event {
   id_event    Int       @id @default(autoincrement())
-  title       String    @db.VarChar(20)
+  title       String    @db.VarChar(150)
   description String?   @db.Text
-  start_date  DateTime?
-  end_date    DateTime?
-  location    String?   @db.VarChar(20)
+  start_date  DateTime
+  end_date    DateTime
+  location    String?   @db.VarChar(150)
 
   sessions    Session[]
 }
 
 model Room {
   id_room     Int       @id @default(autoincrement())
-  name        String    @db.VarChar(20)
+  name        String    @db.VarChar(50)
   capacity    Int?
 
   sessions    Session[]
@@ -39,10 +38,10 @@ model Speaker {
 
 model Session {
   id_session      Int       @id @default(autoincrement())
-  title           String    @db.VarChar(20)
+  title           String    @db.VarChar(150)
   description     String?   @db.Text
-  start_time      DateTime? @db.Time
-  end_time        DateTime? @db.Time
+  start_time      DateTime  @db.Time(6)
+  end_time        DateTime  @db.Time(6)
   max_participant Int?
 
   id_room         Int

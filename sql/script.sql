@@ -3,5 +3,5 @@ CREATE DATABASE eventsync_db;
 
 GRANT ALL PRIVILEGES ON DATABASE eventsync_db TO eventsync_user;
 
-# afeter "\c eventsync_db"
+# after "\c eventsync_db"
 GRANT ALL ON SCHEMA public TO eventsync_user;
