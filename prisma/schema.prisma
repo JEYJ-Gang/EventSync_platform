@@ -4,86 +4,76 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env(DATABASE_URL)
 }
 
 model Event {
   id_event    Int       @id @default(autoincrement())
   title       String    @db.VarChar(150)
-  description String?   @db.Text
+  description String?
   start_date  DateTime
   end_date    DateTime
   location    String?   @db.VarChar(150)
-
   sessions    Session[]
 
   @@map("event")
 }
 
 model Room {
-  id_room     Int       @id @default(autoincrement())
-  name        String    @db.VarChar(50)
-  capacity    Int?
-
-  sessions    Session[]
+  id_room  Int       @id @default(autoincrement())
+  name     String    @db.VarChar(50)
+  capacity Int?
+  sessions Session[]
 
   @@map("room")
 }
 
 model Speaker {
-  id_speaker    Int       @id @default(autoincrement())
-  first_name    String    @db.VarChar(150)
-  last_name     String    @db.VarChar(150)
-  photo_url     String?   @db.Text
-  biography     String?   @db.Text
-  external_link String?   @db.Text
-
+  id_speaker    Int         @id @default(autoincrement())
+  first_name    String      @db.VarChar(150)
+  last_name     String      @db.VarChar(150)
+  photo_url     String?
+  biography     String?
+  external_link String?
   intervenes    Intervene[]
 
   @@map("speaker")
 }
 
 model Session {
-  id_session      Int       @id @default(autoincrement())
-  title           String    @db.VarChar(150)
-  description     String?   @db.Text
-  start_time      DateTime  @db.Time(6)
-  end_time        DateTime  @db.Time(6)
+  id_session      Int         @id @default(autoincrement())
+  title           String      @db.VarChar(150)
+  description     String?
+  start_time      DateTime    @db.Time(6)
+  end_time        DateTime    @db.Time(6)
   max_participant Int?
-
   id_room         Int
-  room            Room      @relation(fields: [id_room], references: [id_room])
-
   id_event        Int
-  event           Event     @relation(fields: [id_event], references: [id_event], onDelete: Cascade)
-
-  questions       Question[]
   intervenes      Intervene[]
+  questions       Question[]
+  event           Event       @relation(fields: [id_event], references: [id_event], onDelete: Cascade)
+  room            Room        @relation(fields: [id_room], references: [id_room])
 
   @@map("session")
 }
 
 model Question {
-  id_question         Int       @id @default(autoincrement())
-  content             String    @db.Text
-  author_name         String?   @db.VarChar(50)
-  upvote              Int       @default(0)
-  creation_datetime   DateTime  @default(now())
-
-  id_session          Int?
-  session             Session?  @relation(fields: [id_session], references: [id_session], onDelete: SetNull)
+  id_question       Int      @id @default(autoincrement())
+  content           String
+  author_name       String?  @db.VarChar(50)
+  upvote            Int      @default(0)
+  creation_datetime DateTime @default(now())
+  id_session        Int?
+  session           Session? @relation(fields: [id_session], references: [id_session])
 
   @@map("question")
 }
 
 model Intervene {
-  id_session  Int
-  session     Session   @relation(fields: [id_session], references: [id_session], onDelete: Cascade)
-
-  id_speaker  Int
-  speaker     Speaker   @relation(fields: [id_speaker], references: [id_speaker], onDelete: Cascade)
+  id_session Int
+  id_speaker Int
+  session    Session @relation(fields: [id_session], references: [id_session], onDelete: Cascade)
+  speaker    Speaker @relation(fields: [id_speaker], references: [id_speaker], onDelete: Cascade)
 
   @@id([id_session, id_speaker])
-
   @@map("intervene")
 }

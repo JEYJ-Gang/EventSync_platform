@@ -23,4 +23,22 @@ export const eventRepository = {
       per_page: perPage,
     };
   },
+
+  async findById(id){
+    return await prisma.event.findUnique({
+      where: {Id_event: Number(id)}, 
+      include:  {
+        sessions: {
+          include: {
+            room : true, 
+            intervenes:{
+              include: {
+                speaker: true, 
+              },
+            },
+          },
+        },
+      },
+    });
+  },
 };

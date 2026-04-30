@@ -26,8 +26,8 @@ CREATE TABLE session (
                          Id_session      SERIAL          PRIMARY KEY,
                          title           VARCHAR(20)     NOT NULL,
                          description     TEXT,
-                         start_time      TIME not null,
-                         end_time        TIME not null,
+                         start_time      TIMESTAMP not null,
+                         end_time        TIMESTAMP not null,
                          max_participant INT,
                          Id_room         INT             NOT NULL REFERENCES room(Id_room)       ON DELETE RESTRICT,
                          Id_event        INT             NOT NULL REFERENCES event(Id_event)     ON DELETE CASCADE
