@@ -1,46 +1,13 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE "organizer" (
+    "id_organizer" SERIAL NOT NULL,
+    "full_name" VARCHAR(150) NOT NULL,
+    "email" VARCHAR(150) NOT NULL,
+    "password_hash" TEXT NOT NULL,
+    "role" TEXT NOT NULL DEFAULT 'ADMIN',
 
-  - You are about to drop the `Event` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Intervene` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Question` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Room` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Session` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Speaker` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "Intervene" DROP CONSTRAINT "Intervene_id_session_fkey";
-
--- DropForeignKey
-ALTER TABLE "Intervene" DROP CONSTRAINT "Intervene_id_speaker_fkey";
-
--- DropForeignKey
-ALTER TABLE "Question" DROP CONSTRAINT "Question_id_session_fkey";
-
--- DropForeignKey
-ALTER TABLE "Session" DROP CONSTRAINT "Session_id_event_fkey";
-
--- DropForeignKey
-ALTER TABLE "Session" DROP CONSTRAINT "Session_id_room_fkey";
-
--- DropTable
-DROP TABLE "Event";
-
--- DropTable
-DROP TABLE "Intervene";
-
--- DropTable
-DROP TABLE "Question";
-
--- DropTable
-DROP TABLE "Room";
-
--- DropTable
-DROP TABLE "Session";
-
--- DropTable
-DROP TABLE "Speaker";
+    CONSTRAINT "organizer_pkey" PRIMARY KEY ("id_organizer")
+);
 
 -- CreateTable
 CREATE TABLE "event" (
@@ -108,6 +75,9 @@ CREATE TABLE "intervene" (
 
     CONSTRAINT "intervene_pkey" PRIMARY KEY ("id_session","id_speaker")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organizer_email_key" ON "organizer"("email");
 
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_id_room_fkey" FOREIGN KEY ("id_room") REFERENCES "room"("id_room") ON DELETE RESTRICT ON UPDATE CASCADE;
