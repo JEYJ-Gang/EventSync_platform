@@ -127,4 +127,26 @@ export const eventService ={
 
         return await eventRepository.createEvent(payload);
     },
+
+    async deleteEvent(id) {
+        if (!id) {
+            throw {
+                status: 422,
+                code: "INVALID_ID",
+                message: "id requis",
+            };
+        }
+
+        const event = await eventRepository.findById(id);
+
+        if (!event) {
+            throw {
+                status: 404,
+                code: "NOT_FOUND",
+                message: "Event introuvable",
+            };
+        }
+
+        return await eventRepository.deleteEvent(id);
+    }
 };
