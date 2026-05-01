@@ -66,5 +66,21 @@ export const eventRepository = {
         start_time: "asc"
       }
     }); 
-  }
+  },
+
+  async createEvent(data) {
+    return await prisma.event.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        start_date: new Date(data.start_date),
+        end_date: new Date(data.end_date),
+        location: data.lieu,
+      },
+    });
+  },
+
+  async findAllEvents() {
+    return await prisma.event.findMany();
+  },
 };

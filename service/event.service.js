@@ -105,5 +105,17 @@ export const eventService ={
             data: mapped, 
             total: mapped.length
         }; 
-    }
+    },
+
+    async createEvent(payload) {
+        if (!payload.title || !payload.start_date || !payload.end_date) {
+            throw {
+                status: 422,
+                code: "INVALID_DATA",
+                message: "Champs obligatoires manquants",
+            };
+        }
+
+        return await eventRepository.createEvent(payload);
+    },
 };
