@@ -41,4 +41,30 @@ export const eventRepository = {
       },
     });
   },
+
+  async findSchedule ({eventId, roomId, date}){
+    return await prisma.session.findMany({
+      where: {
+        id_event: eventId, 
+        ...(roomId && {id_room: parseInt(roomId)}), 
+        ...(date && {
+          start_time: {
+            gte: new Date(date + "T00.00.00"), 
+            lte: new Date(date + "T23.59.59")
+          }
+        })
+      }, 
+      include: {
+        room: true, 
+        intervenes: {
+          include: {
+            speaker: true
+          }
+        }
+      },
+      orderBy: {
+        start_time: "asc"
+      }
+    }); 
+  }
 };
