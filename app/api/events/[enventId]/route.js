@@ -3,7 +3,7 @@ import { eventService } from "../../../../service/event.service";
 
 export async function GET(request, {params}){
     try{
-        const {id} = params; 
+        const {eventId} = params; 
         const event = await eventService.getEventById(id); 
 
         return NextResponse.json(event, {status: 200}); 
