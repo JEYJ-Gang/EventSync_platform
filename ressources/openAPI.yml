@@ -37,13 +37,30 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: >
-        JWT obtenu via POST /auth/login. Requis uniquement pour les endpoints
-        d'administration (organisateurs).
+        JWT obtenu via /auth/login. 
+        Utilisé uniquement pour les routes admin (organisateur).
 
   # -------------------------------------------------------------------------
   # SCHEMAS
   # -------------------------------------------------------------------------
   schemas:
+
+    Organizer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        full_name:
+          type: string
+          example: "Admin EventSync"
+        email:
+          type: string
+          format: email
+          example: "admin@eventsync.com"
+        role:
+          type: string
+          example: "ADMIN"
 
     # ── Auth ────────────────────────────────────────────────────────────────
     LoginRequest:
@@ -64,14 +81,14 @@ components:
       properties:
         access_token:
           type: string
-          description: JWT à transmettre dans l'en-tête Authorization
+          description: JWT token à utiliser dans Authorization header
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         token_type:
           type: string
-          example: bearer
+          example: "Bearer"
         expires_in:
-          type: integer
-          description: Durée de validité en secondes
-          example: 3600
+          type: string
+          example: "1d"
 
     # ── Event ───────────────────────────────────────────────────────────────
     EventBase:
@@ -424,12 +441,11 @@ paths:
   # ══════════════════════════════════════════════════════════════════════════
   /auth/login:
     post:
-      tags: [Events]
-      summary: Authentification organisateur
+      tags: [ Auth ]
+      summary: Connexion organisateur (admin)
       description: >
-        Retourne un JWT valide permettant d'accéder aux endpoints d'administration.
-        Réservé aux organisateurs.
-      operationId: loginAdmin
+        Authentifie un organisateur et retourne un JWT pour accéder aux routes protégées.
+      operationId: loginOrganizer
       requestBody:
         required: true
         content:
@@ -438,20 +454,17 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Authentification réussie
+          description: Connexion réussie
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
         '401':
-          description: Identifiants incorrects
+          description: Identifiants invalides
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-
   # ══════════════════════════════════════════════════════════════════════════
   # EVENTS
   # ══════════════════════════════════════════════════════════════════════════
