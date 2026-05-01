@@ -4,7 +4,8 @@ import { verifyToken } from "@/lib/jwt";
 
 export async function GET(request, {params}){
     try{
-        const {eventId} = params; 
+        const { eventId } = params;
+
         const event = await eventService.getEventById(eventId);
 
         return NextResponse.json(event, {status: 200}); 

@@ -33,5 +33,7 @@ export function middleware(req) {
 }
 
 export const config = {
-    matcher: ["/api/events/:path*"],
+    matcher: [
+        "/api((?!/events).*)"
+    ]
 };

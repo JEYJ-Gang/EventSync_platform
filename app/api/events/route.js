@@ -21,7 +21,6 @@ export async function GET (request ){
 }
 
 export async function DELETE(req, { params }) {
-    console.log("🔥 DELETE ROUTE HIT");
     try {
         const authHeader = req.headers.get("authorization");
 

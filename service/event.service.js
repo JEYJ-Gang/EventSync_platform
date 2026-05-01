@@ -1,36 +1,44 @@
 
 import { eventRepository } from "../repository/event.repository";
 
-function mapEvent(event){
-    const now = new Date(); 
-    return{
-        id: event.id_event, 
-        title: event.title, 
-        description: event.description, 
-        start_date: event.start_date, 
-        end_date: event.end_date, 
-        location: event.location, 
-        sessions: event.sessions.map((s) => ({
-            id: s.id_session, 
-            title: s.title, 
-            description: s.description, 
-            start_time: s.start_time, 
-            end_time: s.end_time, 
-            is_live: 
-                new Date(s.start_time)  <= now &&
-                new Date(s.end_time) >= now, 
-            room: {
-                id: s.room.id_room, 
-                name: s.room.name, 
-            }, 
-            speakers: s.intervenes.map((i)=> ({
-                id: i.speaker.id_speaker,
-                full_name: `${i.speaker.first_name} ${i.speaker.last_name}`, 
-                photo_url: i.speaker.photo_url, 
-            })), 
+function mapEvent(event) {
+    if (!event) return null;
 
+    const now = new Date();
+
+    return {
+        id: event.id_event,
+        title: event.title,
+        description: event.description,
+        start_date: event.start_date,
+        end_date: event.end_date,
+        location: event.location,
+
+        sessions: (event.sessions ?? []).map((s) => ({
+            id: s.id_session,
+            title: s.title,
+            description: s.description,
+            start_time: s.start_time,
+            end_time: s.end_time,
+
+            is_live:
+                new Date(s.start_time) <= now &&
+                new Date(s.end_time) >= now,
+
+            room: s.room
+                ? {
+                    id: s.room.id_room,
+                    name: s.room.name,
+                }
+                : null,
+
+            speakers: (s.intervenes ?? []).map((i) => ({
+                id: i.speaker.id_speaker,
+                full_name: `${i.speaker.first_name} ${i.speaker.last_name}`,
+                photo_url: i.speaker.photo_url,
+            })),
         })),
-    }; 
+    };
 }
 
 export const eventService ={
