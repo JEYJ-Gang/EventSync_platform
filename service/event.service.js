@@ -53,23 +53,10 @@ export const eventService = {
     },
 
     async getEventById(eventId) {
-        if (!eventId) {
-            throw {
-                status: 422,
-                code: "Invalid_Id",
-                message: "id requis",
-            };
-        }
-
+        
         const event = await eventRepository.findById(eventId);
 
-        if (!event) {
-            throw {
-                status: 404,
-                code: "NOT_FOUND",
-                message: "Event not found",
-            };
-        }
+        if (!event) return null; 
         return mapEvent(event);
     },
 
