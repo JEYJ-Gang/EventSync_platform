@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import {eventService} from "../service/eventService";
+import {eventService} from "../../../service/event.service";
 export async function GET (request ){
     try{
-        const{searchParms} = new URL(request.url); 
-        const page = parseInt(searchParms.get("page") || "1", 10); 
-        const perPage = parseInt(searchParms.get("per_page") || "20", 10); 
+        const{searchParams} = new URL(request.url); 
+        const page = parseInt(searchParams.get("page") || "1", 10); 
+        const perPage = parseInt(searchParams.get("per_page") || "20", 10); 
         const result = await eventService.listEvents({
             page, 
             perPage,
