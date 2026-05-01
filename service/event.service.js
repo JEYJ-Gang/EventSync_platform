@@ -58,7 +58,16 @@ export const eventService ={
                 message: "id requis", 
             };
         }
+        
         const event=  await eventRepository.findById(id); 
+
+        if (!event) {
+            throw {
+                status: 404,
+                code: "NOT_FOUND",
+                message: "Event not found",
+            };
+        }
         return mapEvent(event); 
     },
 
@@ -88,7 +97,7 @@ export const eventService ={
             id: session.id_session, 
             title: session.title, 
             start_time: session.start_time, 
-            end_time: session.end_date, 
+            end_time: session.end_time, 
             is_live: now >= session.start_time && now <= session.end_time, 
             room: {
                 id: session.room.id_room, 
