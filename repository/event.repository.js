@@ -26,7 +26,7 @@ export const eventRepository = {
 
   async findById(id){
     return await prisma.event.findUnique({
-      where: {Id_event: Number(id)}, 
+      where: {id_event: Number(id)},
       include:  {
         sessions: {
           include: {
