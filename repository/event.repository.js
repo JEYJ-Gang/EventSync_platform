@@ -1,6 +1,32 @@
 import { prisma } from "@/lib/prisma";
 
 export const eventRepository = {
+  async findEvents({ skip, take }) {
+    return prisma.event.findMany({
+      skip,
+      take,
+      orderBy: {
+        id_event: "asc",
+      },
+      include: {
+        sessions: {
+          include: {
+            room: true,
+            intervenes: {
+              include: {
+                speaker: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  },
+
+  async countEvents() {
+    return prisma.event.count();
+  },
+
   async findAll({ page, perPage }) {
     const skip = (page - 1) * perPage;
     const take = perPage;
@@ -24,16 +50,23 @@ export const eventRepository = {
     };
   },
 
-  async findById(id){
-    return await prisma.event.findUnique({
-      where: {id_event: Number(id)},
-      include:  {
+  async findById(id) {
+   
+    const eventId = parseInt(id); 
+    if(isNaN(eventId)){
+      return null;  
+    }
+    return prisma.event.findUnique({
+      where: {
+        id_event: eventId,
+      },
+      include: {
         sessions: {
           include: {
-            room : true, 
-            intervenes:{
+            room: true,
+            intervenes: {
               include: {
-                speaker: true, 
+                speaker: true,
               },
             },
           },
@@ -42,20 +75,20 @@ export const eventRepository = {
     });
   },
 
-  async findSchedule ({eventId, roomId, date}){
+  async findSchedule({ eventId, roomId, date }) {
     return await prisma.session.findMany({
       where: {
-        id_event: eventId, 
-        ...(roomId && {id_room: parseInt(roomId)}), 
+        id_event: eventId,
+        ...(roomId && { id_room: parseInt(roomId) }),
         ...(date && {
           start_time: {
-            gte: new Date(date + "T00.00.00"), 
+            gte: new Date(date + "T00.00.00"),
             lte: new Date(date + "T23.59.59")
           }
         })
-      }, 
+      },
       include: {
-        room: true, 
+        room: true,
         intervenes: {
           include: {
             speaker: true

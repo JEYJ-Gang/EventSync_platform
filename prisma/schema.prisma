@@ -15,7 +15,6 @@ model Event {
   end_date    DateTime
   location    String?   @db.VarChar(150)
   sessions    Session[]
-
   @@map("event")
 }
 

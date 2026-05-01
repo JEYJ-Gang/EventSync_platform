@@ -8,12 +8,27 @@ export async function GET(request, {params}){
 
         const event = await eventService.getEventById(eventId);
 
-        return NextResponse.json(event, {status: 200}); 
-    } catch(error){
-        return NextResponse.json({
-            code: error.code || "INTERNAL_ERROR", 
-            message: error.message || "erreur du serveur", 
-        }, 
-    {status: error.status || 500}); 
+        const event = await eventService.getEventById(eventId);
+        if (!event) {
+            return NextResponse.json(
+                {
+                    code: "NOT_FOUND",
+                    message: "evenement introuvable"
+                },
+                { status: 404 }
+            );
+        }
+        return NextResponse.json(event, { status: 200 });
     }
+    catch(error){
+        console.error(error); 
+        return NextResponse.json(
+            {
+                code: "INTERNAL_ERROR",
+                message: "erreur serveur", 
+            }, 
+            {status: 500}
+        )
+    } 
 }
+
