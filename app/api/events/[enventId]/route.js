@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { eventService } from "../../../../service/event.service";
+import { verifyToken } from "@/lib/jwt";
 
-export async function GET(request, { params }) {
-    
-    try {
-        const { eventId } = params;
+export async function GET(request, {params}){
+    try{
+        const {eventId} = params; 
+        const event = await eventService.getEventById(eventId);
 
         const event = await eventService.getEventById(eventId);
         if (!event) {

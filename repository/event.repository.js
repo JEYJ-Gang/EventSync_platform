@@ -116,4 +116,12 @@ export const eventRepository = {
   async findAllEvents() {
     return await prisma.event.findMany();
   },
+
+  async deleteEvent(id) {
+    return await prisma.event.delete({
+      where: {
+        id_event: Number(id),
+      },
+    });
+  }
 };
