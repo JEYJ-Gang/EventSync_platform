@@ -2,14 +2,16 @@ import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/jwt";
 
 export function middleware(req) {
-    const token = req.cookies.get("auth_token")?.value;
-    
-    if (!token) {
+    const authHeader = req.headers.get("authorization");
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return NextResponse.json(
             { message: "Unauthorized" },
             { status: 401 }
         );
     }
+
+    const token = authHeader.split(" ")[1];
 
     try {
         const decoded = verifyToken(token);

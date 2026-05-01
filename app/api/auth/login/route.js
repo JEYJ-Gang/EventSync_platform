@@ -32,19 +32,12 @@ export async function POST(req) {
 
         const token = generateToken(organizer);
 
-        const response = NextResponse.json({
+        return NextResponse.json({
             message: "Login successful",
+            access_token: token,
+            token_type: "bearer",
         });
 
-        response.cookies.set("auth_token", token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "strict",
-            maxAge: 60 * 60 * 24,
-            path: "/",
-        });
-
-        return response;
     } catch (error) {
         return NextResponse.json(
             { message: "Server error" },
