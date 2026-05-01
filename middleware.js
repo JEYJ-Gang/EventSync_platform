@@ -6,7 +6,7 @@ export function middleware(req) {
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return NextResponse.json(
-            { message: "Unauthorized" },
+            { message: "Unauthorized - missing token" },
             { status: 401 }
         );
     }
@@ -16,7 +16,7 @@ export function middleware(req) {
     try {
         const decoded = verifyToken(token);
 
-        if (decoded.role !== "ADMIN") {
+        if (!decoded || decoded.role !== "ADMIN") {
             return NextResponse.json(
                 { message: "Forbidden" },
                 { status: 403 }
@@ -24,7 +24,7 @@ export function middleware(req) {
         }
 
         return NextResponse.next();
-    } catch {
+    } catch (err) {
         return NextResponse.json(
             { message: "Invalid token" },
             { status: 401 }
@@ -33,5 +33,5 @@ export function middleware(req) {
 }
 
 export const config = {
-    matcher: ["/api/admin/:path*"],
+    matcher: ["/api/events/:path*"],
 };
