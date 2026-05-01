@@ -1,6 +1,32 @@
 import { prisma } from "@/lib/prisma";
 
 export const eventRepository = {
+  async findEvents({skip, take}){
+     return prisma.event.findMany({
+    skip,
+    take,
+    orderBy: {
+      id_event: "asc",
+    },
+    include: {
+      sessions: {
+        include: {
+          room: true,
+          intervenes: {
+            include: {
+              speaker: true,
+            },
+          },
+        },
+      },
+    },
+  });
+},
+
+  async countEvents() {
+  return prisma.event.count();
+  }, 
+
   async findAll({ page, perPage }) {
     const skip = (page - 1) * perPage;
     const take = perPage;

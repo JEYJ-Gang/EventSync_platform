@@ -1,65 +1,67 @@
 
 import { eventRepository } from "../repository/event.repository";
 
-function mapEvent(event){
-    const now = new Date(); 
-    return{
-        id: event.id_event, 
-        title: event.title, 
-        description: event.description, 
-        start_date: event.start_date, 
-        end_date: event.end_date, 
-        location: event.location, 
-        sessions: event.sessions.map((s) => ({
-            id: s.id_session, 
-            title: s.title, 
-            description: s.description, 
-            start_time: s.start_time, 
-            end_time: s.end_time, 
-            is_live: 
-                new Date(s.start_time)  <= now &&
-                new Date(s.end_time) >= now, 
-            room: {
-                id: s.room.id_room, 
-                name: s.room.name, 
-            }, 
-            speakers: s.intervenes.map((i)=> ({
+function mapEvent(event) {
+    const now = new Date();
+    return {
+        id: event.id_event,
+        title: event.title,
+        description: event.description,
+        start_date: event.start_date,
+        end_date: event.end_date,
+        location: event.location,
+        sessions: (event.sessions || []).map((s) => ({
+            id: s.id_session,
+            title: s.title,
+            description: s.description,
+            start_time: s.start_time,
+            end_time: s.end_time,
+            is_live:
+                new Date(s.start_time) <= now &&
+                new Date(s.end_time) >= now,
+            room: s.room
+            ?{
+                id: s.room.id_room,
+                name: s.room.name,
+            }
+            :null,
+            speakers: (s.intervenes || []).map((i) => ({
                 id: i.speaker.id_speaker,
-                full_name: `${i.speaker.first_name} ${i.speaker.last_name}`, 
-                photo_url: i.speaker.photo_url, 
-            })), 
+                full_name: `${i.speaker.first_name} ${i.speaker.last_name}`,
+                photo_url: i.speaker.photo_url,
+            })),
 
         })),
-    }; 
+    };
 }
 
-export const eventService ={
-    async listEvents({page, perPage}){
-        if(page < 1 || perPage < 1){
-            throw{
-                status: 422, 
-                code: "UNPROCESSABLE_ENTITY", 
-                message: "invalid paramters", 
-            }; 
-        }
+export const eventService = {
+    async listEvents({ page = 1, per_page = 20 }) {
+        const skip = (page - 1) * per_page;
+        const [events, total] = await Promise.all([
+            eventRepository.findEvents({ skip, take: per_page }),
+            eventRepository.countEvents(),
+        ]);
 
-        const result=  await eventRepository.findAll({page, perPage}); 
-        return{
-            ...result, 
-            data: result.data.map(mapEvent)
-        }
+        return {
+            data: events.map(mapEvent),
+            total,
+            page,
+            per_page,
+        };
+
     },
 
-    async getEventById(id){
-        if(!id){
-            throw{
+    async getEventById(eventId) {
+        if (!eventId) {
+            throw {
                 status: 422,
-                code: "Invalid_Id", 
-                message: "id requis", 
+                code: "Invalid_Id",
+                message: "id requis",
             };
         }
-        
-        const event=  await eventRepository.findById(id); 
+
+        const event = await eventRepository.findById(eventId);
 
         if (!event) {
             throw {
@@ -68,51 +70,51 @@ export const eventService ={
                 message: "Event not found",
             };
         }
-        return mapEvent(event); 
+        return mapEvent(event);
     },
 
-    async getEventSchedule({eventId, roomId, date}){
-        if(!eventId){
-            throw{
-                status: 422, 
-                code: "UNPROCESSABLE_ENTITY", 
+    async getEventSchedule({ eventId, roomId, date }) {
+        if (!eventId) {
+            throw {
+                status: 422,
+                code: "UNPROCESSABLE_ENTITY",
                 message: "Invalid eventId"
-            }; 
+            };
         }
         const sessions = await eventRepository.findSchedule({
-            eventId, 
-            roomId, 
+            eventId,
+            roomId,
             date
-        }); 
-        if(!sessions.length){
-            throw{
-                status: 404, 
-                code: "NOT_FOUND", 
+        });
+        if (!sessions.length) {
+            throw {
+                status: 404,
+                code: "NOT_FOUND",
                 message: "No sessions found"
-            }; 
+            };
         }
 
-        const now = new Date(); 
+        const now = new Date();
         const mapped = sessions.map(session => ({
-            id: session.id_session, 
-            title: session.title, 
-            start_time: session.start_time, 
-            end_time: session.end_time, 
-            is_live: now >= session.start_time && now <= session.end_time, 
+            id: session.id_session,
+            title: session.title,
+            start_time: session.start_time,
+            end_time: session.end_time,
+            is_live: now >= session.start_time && now <= session.end_time,
             room: {
-                id: session.room.id_room, 
+                id: session.room.id_room,
                 name: session.room.name
-            }, 
-            speakers: session.intervenes.map(i=>({
-                id: i.speaker.id_speaker, 
-                full_name: `${i.speaker.first_name} ${i.speaker.last_name}`, 
+            },
+            speakers: session.intervenes.map(i => ({
+                id: i.speaker.id_speaker,
+                full_name: `${i.speaker.first_name} ${i.speaker.last_name}`,
                 photo_url: i.speaker.photo_url
             }))
-        })); 
+        }));
 
         return {
-            data: mapped, 
+            data: mapped,
             total: mapped.length
-        }; 
+        };
     }
 };
