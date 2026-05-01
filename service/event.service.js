@@ -59,25 +59,12 @@ export const eventService ={
     },
 
     async getEventById(id){
-        if(!id){
-            throw{
-                status: 422,
-                code: "Invalid_Id", 
-                message: "id requis", 
-            };
-        }
-        
-        const event=  await eventRepository.findById(id); 
+        const parseId = Number(id); 
+        if(!isNaN(parseId)) return null; 
 
-        if (!event) {
-            throw {
-                status: 404,
-                code: "NOT_FOUND",
-                message: "Event not found",
-            };
-        }
-        return mapEvent(event); 
-    },
+        return eventRepository.findById(parseId)
+        },
+  
 
     async getEventSchedule({eventId, roomId, date}){
         if(!eventId){
@@ -155,6 +142,6 @@ export const eventService ={
             };
         }
 
-        return await eventRepository.deleteEvent(id);
+        return await eventService.deleteEvent(id);
     }
 };

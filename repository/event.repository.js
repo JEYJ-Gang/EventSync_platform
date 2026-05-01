@@ -50,12 +50,8 @@ export const eventRepository = {
     };
   },
 
-  async findById(id) {
+  async findById(eventId) {
    
-    const eventId = parseInt(id); 
-    if(isNaN(eventId)){
-      return null;  
-    }
     return prisma.event.findUnique({
       where: {
         id_event: eventId,
@@ -117,10 +113,10 @@ export const eventRepository = {
     return await prisma.event.findMany();
   },
 
-  async deleteEvent(id) {
+  async deleteEvent(eventId) {
     return await prisma.event.delete({
       where: {
-        id_event: Number(id),
+        id_event: Number(eventId),
       },
     });
   }
