@@ -3,7 +3,7 @@ import { verifyToken } from "@/lib/jwt";
 
 export function middleware(req) {
     const token = req.cookies.get("auth_token")?.value;
-
+    
     if (!token) {
         return NextResponse.json(
             { message: "Unauthorized" },
