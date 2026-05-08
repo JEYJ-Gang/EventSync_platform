@@ -1,9 +1,7 @@
 
 import { eventRepository } from "../repository/event.repository";
 
-function mapEvent(event) {
-    if (!event) return null;
-
+function mapEvent(event){
     const now = new Date();
 
     return {
@@ -14,7 +12,7 @@ function mapEvent(event) {
         end_date: event.end_date,
         location: event.location,
 
-        sessions: (event.sessions ?? []).map((s) => ({
+        sessions: (event.sessions || []).map((s) => ({
             id: s.id_session,
             title: s.title,
             description: s.description,
@@ -32,7 +30,7 @@ function mapEvent(event) {
                 }
                 : null,
 
-            speakers: (s.intervenes ?? []).map((i) => ({
+            speakers: (s.intervenes || []).map((i) => ({
                 id: i.speaker.id_speaker,
                 full_name: `${i.speaker.first_name} ${i.speaker.last_name}`,
                 photo_url: i.speaker.photo_url,

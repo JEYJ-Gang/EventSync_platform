@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { eventService } from "../../../../service/event.service";
-import { verifyToken } from "@/lib/jwt";
 
 export async function GET(request, {params}){
     try{
