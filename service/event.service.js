@@ -65,7 +65,7 @@ export const eventService ={
   
 
     async getEventSchedule({eventId, roomId, date}){
-        if(!eventId){
+        if(isNaN(eventId)){
             throw{
                 status: 422, 
                 code: "UNPROCESSABLE_ENTITY", 
