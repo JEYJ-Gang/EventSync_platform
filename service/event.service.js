@@ -60,7 +60,7 @@ export const eventService ={
 
     async getEventById(id){
         const parseId = Number(id); 
-        if(!isNaN(parseId)) return null; 
+        if(isNaN(parseId)) return null; 
 
         return eventRepository.findById(parseId)
         },
