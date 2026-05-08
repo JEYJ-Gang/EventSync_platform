@@ -4,7 +4,7 @@ import { verifyToken } from "@/lib/jwt";
 
 export async function POST(req) {
     try {
-        const authHeader = req.headers.get("authorization");
+        const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
 
         if (!authHeader) {
             return NextResponse.json(
@@ -13,7 +13,7 @@ export async function POST(req) {
             );
         }
 
-        const token = authHeader.split(" ")[1];
+        const token = authHeader.replace("Bearer", "").trim();
 
         const decoded = verifyToken(token);
 

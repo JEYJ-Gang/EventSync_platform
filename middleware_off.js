@@ -2,6 +2,18 @@ import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/jwt";
 
 export function middleware(req) {
+
+    const {pathname} = req.nextUrl; 
+
+    const publicRoutes = [
+        "/api/auth", 
+        "/api/events", 
+        "/api/speakers"
+    ]; 
+
+    if(publicRoutes.some(route => pathname.startsWith(route))) {
+        return NextResponse.next(); 
+    }
     const authHeader = req.headers.get("authorization");
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -11,7 +23,7 @@ export function middleware(req) {
         );
     }
 
-    const token = authHeader.split(" ")[1];
+    const token = authHeader.replace("Bearer", "").trim();
 
     try {
         const decoded = verifyToken(token);
@@ -34,6 +46,6 @@ export function middleware(req) {
 
 export const config = {
     matcher: [
-        "/api((?!/events).*)"
-    ]
+        "/api/admin/:path*"
+    ],
 };

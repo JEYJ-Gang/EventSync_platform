@@ -15,6 +15,7 @@ model Event {
   end_date    DateTime
   location    String?   @db.VarChar(150)
   sessions    Session[]
+
   @@map("event")
 }
 
@@ -76,4 +77,12 @@ model Intervene {
 
   @@id([id_session, id_speaker])
   @@map("intervene")
+}
+
+model Organizer {
+  id_organizer  Int    @id @default(autoincrement())
+  full_name     String
+  email         String @unique
+  password_hash String
+  role          String
 }
