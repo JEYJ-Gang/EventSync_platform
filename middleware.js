@@ -1,20 +1,13 @@
 import { NextResponse } from "next/server";
-import { verifyToken } from "@/lib/jwt";
 
 export function middleware(req) {
+    const authHeader = req.headers.get("authorization");
 
-    const { pathname } = req.nextUrl;
+    const isLoginRoute = req.nextUrl.pathname === "/api/auth/login";
 
-    const publicRoutes = [
-        "/api/auth",
-        "/api/events",
-        "/api/speakers"
-    ];
-
-    if (publicRoutes.some(route => pathname.startsWith(route))) {
+    if (isLoginRoute) {
         return NextResponse.next();
     }
-    const authHeader = req.headers.get("authorization");
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return NextResponse.json(
@@ -23,34 +16,5 @@ export function middleware(req) {
         );
     }
 
-    const token = authHeader.split(" ")[1];
-
-    try {
-        const decoded = verifyToken(token);
-
-        console.log("TOKEN:", token);
-        console.log("DECODED:", decoded);
-        console.log("ROLE RAW:", decoded?.role);
-        console.log("ROLE CLEAN:", (decoded?.role || "").trim().toUpperCase());
-
-        if (!decoded || decoded.role !== "ADMIN") {
-            return NextResponse.json(
-                { message: "Forbidden" },
-                { status: 403 }
-            );
-        }
-
-        return NextResponse.next();
-    } catch (err) {
-        return NextResponse.json(
-            { message: "Invalid token" },
-            { status: 401 }
-        );
-    }
+    return NextResponse.next();
 }
-
-export const config = {
-    matcher: [
-        "/api/admin/:path*"
-    ],
-};
