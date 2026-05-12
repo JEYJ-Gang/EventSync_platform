@@ -3,16 +3,16 @@ import { verifyToken } from "@/lib/jwt";
 
 export function middleware(req) {
 
-    const {pathname} = req.nextUrl; 
+    const { pathname } = req.nextUrl;
 
     const publicRoutes = [
-        "/api/auth", 
-        "/api/events", 
+        "/api/auth",
+        "/api/events",
         "/api/speakers"
-    ]; 
+    ];
 
-    if(publicRoutes.some(route => pathname.startsWith(route))) {
-        return NextResponse.next(); 
+    if (publicRoutes.some(route => pathname.startsWith(route))) {
+        return NextResponse.next();
     }
     const authHeader = req.headers.get("authorization");
 
@@ -23,10 +23,15 @@ export function middleware(req) {
         );
     }
 
-    const token = authHeader.replace("Bearer", "").trim();
+    const token = authHeader.split(" ")[1];
 
     try {
         const decoded = verifyToken(token);
+
+        console.log("TOKEN:", token);
+        console.log("DECODED:", decoded);
+        console.log("ROLE RAW:", decoded?.role);
+        console.log("ROLE CLEAN:", (decoded?.role || "").trim().toUpperCase());
 
         if (!decoded || decoded.role !== "ADMIN") {
             return NextResponse.json(
