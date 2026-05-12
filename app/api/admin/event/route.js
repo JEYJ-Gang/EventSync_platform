@@ -2,13 +2,15 @@ import { NextResponse } from "next/server";
 import { eventService } from "../../../../service/event.service.js";
 import { verifyToken } from "@/lib/jwt";
 
+export const runtime = "nodejs";
+
 export async function POST(req) {
     try {
         const authHeader = req.headers.get("authorization");
 
-        if (!authHeader) {
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return NextResponse.json(
-                { message: "Missing token" },
+                { message: "Missing or invalid authorization header" },
                 { status: 401 }
             );
         }
@@ -38,6 +40,8 @@ export async function POST(req) {
         return NextResponse.json(event, { status: 201 });
 
     } catch (error) {
+        console.error("POST /event error:", error);
+
         return NextResponse.json(
             {
                 code: "INTERNAL_ERROR",

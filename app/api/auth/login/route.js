@@ -35,10 +35,12 @@ export async function POST(req) {
         return NextResponse.json({
             message: "Login successful",
             access_token: token,
-            token_type: "bearer",
+            token_type: "Bearer",
         });
 
     } catch (error) {
+        console.log(error);
+
         return NextResponse.json(
             { message: "Server error" },
             { status: 500 }
