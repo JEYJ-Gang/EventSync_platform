@@ -135,5 +135,25 @@
           id_event: Number(id),
         },
       });
+    },
+
+    async updateEvent(eventId, data) {
+      return await prisma.event.update( {
+        where: {
+          id_event: eventId, 
+        }, 
+
+        data: {
+          title: data.title, 
+          description: data.description, 
+          start_date: data.start_date, 
+          end_date: data.end_date, 
+          location: data.location, 
+        },
+
+        include: {
+          sessions: true, 
+        },
+      });
     }
   };

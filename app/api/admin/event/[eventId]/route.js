@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { eventService } from "../../../../../service/event.service";
+
 export async function DELETE(req, { params }) {
     try {
         const authHeader = req.headers.get("authorization");
@@ -45,6 +46,39 @@ export async function DELETE(req, { params }) {
                 message: "Erreur serveur",
             },
             { status: 500 }
+        );
+    }
+}
+
+export async function PUT(req, { params }) {
+    try {
+
+        const body = await req.json();
+
+        const authHeader = req.headers.get("authorization");
+
+        const token = authHeader.split(" ")[1];
+
+        const  {eventId} = await params; 
+        const updatedEvent = await eventService.updateEvent({
+            eventId, 
+            body,
+            token,
+        });
+
+        return NextResponse.json(updatedEvent, {
+            status: 200,
+        });
+
+    } catch (error) {
+
+        return NextResponse.json(
+            {
+                message: error.message || "Internal server error",
+            },
+            {
+                status: error.status || 500,
+            }
         );
     }
 }
