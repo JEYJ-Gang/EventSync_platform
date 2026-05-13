@@ -118,6 +118,46 @@ export const eventService = {
             };
         }
 
+        const startDate = new Date(payload.start_date);
+
+        const endDate = new Date(payload.end_date);
+
+        if (
+            isNaN(startDate.getTime()) ||
+            isNaN(endDate.getTime())
+        ) {
+            throw {
+                status: 422,
+                code: "INVALID_DATE",
+                message: "Format de date invalide",
+            };
+        }
+
+        if (startDate >= endDate) {
+            throw {
+                status: 422,
+                code: "INVALID_DATE_RANGE",
+                message: "start_date must be before end_date",
+            };
+        }
+
+        const duplicateEvent =
+        await eventRepository.findDuplicateEvent({
+            title: payload.title,
+            start_date: payload.start_date,
+            end_date: payload.end_date,
+            location: payload.location,
+        });
+
+    if (duplicateEvent) {
+
+        throw {
+            status: 409,
+            code: "EVENT_ALREADY_EXISTS",
+            message: "Event already exists",
+        };
+    }
+
         return await eventRepository.createEvent(payload);
     },
 
@@ -212,17 +252,17 @@ export const eventService = {
                 message: "Event not found",
             };
         }
-         const updatedEvent = await eventRepository.updateEvent(
+        const updatedEvent = await eventRepository.updateEvent(
             parsedEventId,
-        {
-            title,
-            description,
-            start_date: startDate,
-            end_date: endDate,
-            location,
-        }
-    );
-    return updatedEvent; 
+            {
+                title,
+                description,
+                start_date: startDate,
+                end_date: endDate,
+                location,
+            }
+        );
+        return updatedEvent;
 
     }
 
