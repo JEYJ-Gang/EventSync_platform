@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { eventService } from "../../../../../service/event.service";
+import { verifyToken } from "@/lib/jwt";
 
 export async function DELETE(req, { params }) {
     try {
@@ -29,7 +30,7 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        const { eventId } = params;
+        const { eventId } = await params;
 
         await eventService.deleteEvent(Number(eventId));
 

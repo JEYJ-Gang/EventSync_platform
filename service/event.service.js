@@ -180,7 +180,7 @@ export const eventService = {
             };
         }
 
-        return await eventService.deleteEvent(id);
+        return await eventRepository.deleteEvent(id);
     },
 
     async updateEvent({ eventId, body, token, }) {
