@@ -140,6 +140,6 @@ export const eventService ={
             };
         }
 
-        return await eventService.deleteEvent(id);
+        return await eventRepository.deleteEvent(id);
     }
 };

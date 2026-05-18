@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
-import { eventService } from "../../../../../service/event.service";
-export async function DELETE(req, { params }) {
+import { eventService } from "@/service/event.service";
+import { verifyToken } from "@/lib/jwt";
+
+export async function DELETE(req, context) {
     try {
+        const params = await context.params;
+
+        console.log("PARAMS:", params);
+        console.log("URL:", req.url);
+
         const authHeader = req.headers.get("authorization");
 
-        console.log("AUTH HEADER:", authHeader);
-
-        if (!authHeader) {
+        if (!authHeader?.startsWith("Bearer ")) {
             return NextResponse.json(
                 { message: "Missing token" },
                 { status: 401 }
@@ -14,21 +19,23 @@ export async function DELETE(req, { params }) {
         }
 
         const token = authHeader.split(" ")[1];
-
-        console.log("TOKEN:", token);
-
         const decoded = verifyToken(token);
 
-        console.log("DECODED:", decoded);
-
-        if (!decoded || decoded.role?.trim().toUpperCase() !== "ADMIN") {
+        if (!decoded || decoded.role?.toUpperCase() !== "ADMIN") {
             return NextResponse.json(
                 { message: "Forbidden" },
                 { status: 403 }
             );
         }
 
-        const { eventId } = params;
+        const eventId = params.eventId;
+
+        if (!eventId) {
+            return NextResponse.json(
+                { message: "Missing eventId" },
+                { status: 400 }
+            );
+        }
 
         await eventService.deleteEvent(Number(eventId));
 
@@ -38,7 +45,8 @@ export async function DELETE(req, { params }) {
         );
 
     } catch (error) {
-        console.log("ERROR:", error);
+        console.log(error);
+
         return NextResponse.json(
             {
                 code: "INTERNAL_ERROR",
