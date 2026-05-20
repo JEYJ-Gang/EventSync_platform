@@ -57,12 +57,15 @@ export const eventService = {
     },
 
     async getEventById(id) {
-        const parseId = Number(id);
-        if (isNaN(parseId)) return null;
+    const parseId = Number(id);
+    if (isNaN(parseId)) return null;
 
-        return eventRepository.findById(parseId)
-    },
+    const event = await eventRepository.findById(parseId);
 
+    if (!event) return null;
+
+    return mapEvent(event);
+},
 
     async getEventSchedule({ eventId, roomId, date }) {
         if (isNaN(eventId)) {

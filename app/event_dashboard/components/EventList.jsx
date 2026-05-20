@@ -3,30 +3,10 @@
 import { useEffect, useState } from "react";
 import EventCard from "./EventCard";
 
-export default function EventList() {
-
-  const [events, setEvents] = useState([]);
-
-  useEffect(() => {
-
-    async function fetchEvents() {
-
-      try {
-
-        const response = await fetch("http://localhost:3000/api/events");
-
-        const data = await response.json();
-
-        setEvents(data);
-
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    fetchEvents();
-
-  }, []);
+export default function EventList({
+  events,
+  openEventModal,
+}) {
 
   return (
 
@@ -37,6 +17,7 @@ export default function EventList() {
         <EventCard
           key={event.id}
           event={event}
+          openEventModal={openEventModal}
         />
 
       ))}

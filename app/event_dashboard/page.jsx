@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 
 import EventList from "./components/EventList";
+import EventModal from "./components/EventModal";
 
 export default function EventDashboard() {
 
-  const [events, setEvents] = useState({data: [],});
+  const [events, setEvents] = useState({ data: [], });
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
 
@@ -23,14 +25,30 @@ export default function EventDashboard() {
 
   }, []);
 
-  if (!events) {
-    return <p>Loading...</p>;
+  async function openEventModal(eventId) {
+
+    const res = await fetch(`/api/events/${eventId}`);
+
+    const data = await res.json();
+
+    setSelectedEvent(data);
+  }
+
+  function closeModal() {
+   setSelectedEvent(null);
   }
 
   return (
     <div>
 
-      <EventList events={events} />
+      <EventList events={events}
+                  openEventModal={openEventModal} />
+      {selectedEvent && (
+        <EventModal
+          event={selectedEvent}
+          closeModal={closeModal}
+        />
+      )}
 
     </div>
   );
