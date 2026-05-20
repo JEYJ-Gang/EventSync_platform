@@ -40,7 +40,7 @@ function mapEvent(event) {
 }
 
 export const eventService = {
-    async listEvents({ page, perPage }) {
+    async listEvents(page = 1, perPage = 10) {
         if (page < 1 || perPage < 1) {
             throw {
                 status: 422,

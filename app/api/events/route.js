@@ -3,9 +3,9 @@
     export async function GET (request ){
         try{
             const{searchParams} = new URL(request.url);
-            const page = parseInt(searchParams.get("page") || "1");
-            const per_page = parseInt(searchParams.get("per_page") || "20");
-            const result = await eventService.listEvents({page, per_page});
+            const page = parseInt(searchParams.get("page")) || 1;
+            const perPage = parseInt(searchParams.get("per_page")) || 10;
+            const result = await eventService.listEvents(page, perPage);
 
             return NextResponse.json(result, {status: 200});
         } catch(error){
