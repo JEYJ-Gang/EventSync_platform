@@ -1,0 +1,1701 @@
+{
+    "version": "2.0.0",
+    "runtimeConfiguration": {
+        "environment": "default",
+        "laxTestingModeEnabled": false,
+        "apiConnectivityCheck": true,
+        "logLevel": "error",
+        "logDestination": "stdout+platform",
+        "logMaxFileSize": 2147483648,
+        "requestHeaderNameRequestId": "x-scan-request-id",
+        "requestHeaderNameScenarioId": "x-scan-scenario-id",
+        "requestHeaderNameRequestType": "x-scan-request-type",
+        "requestFlowrate": 100,
+        "requestTimeout": 30,
+        "requestTlsInsecureSkipVerify": true,
+        "responseFollowRedirection": false,
+        "responseMaxBodySizeScan": 10485760,
+        "happyPathOnly": false,
+        "maxRequestRetryAttempts": 5,
+        "maxScanDuration": 1800,
+        "memoryLimit": 2147483648,
+        "memoryTimeSpan": 10,
+        "reportMaxRequestSizeHappyPath": 8092,
+        "reportMaxRequestSizeTest": 8092,
+        "reportIncludeRequestBody": true,
+        "reportIncludeResponseBody": true,
+        "reportMaxHttpResponseSizeHappyPath": 8092,
+        "reportMaxBodySizeHappyPath": 8092,
+        "reportMaxHttpResponseSizeTest": 8092,
+        "reportMaxBodySizeTest": 8092,
+        "reportIssuesOnly": false,
+        "reportMaxIssues": 1000,
+        "reportMaxSize": 20971520,
+        "reportGenerateCurlCommand": true,
+        "normalizeServerUrls": true
+    },
+    "customizations": {
+        "happyPaths": {
+            "retry": 1,
+            "responsePolicy": {
+                "httpStatusExpected": true,
+                "mustBeConformant": true
+            },
+            "httpStatusExpected": [
+                "2XX",
+                "404"
+            ]
+        },
+        "tests": {
+            "responsePolicy": {
+                "httpStatusExpected": true,
+                "mustBeConformant": true
+            }
+        },
+        "requests": {}
+    },
+    "authenticationDetails": [
+        {
+            "BearerAuth": {
+                "type": "bearer",
+                "default": "BearerAuth",
+                "credentials": {
+                    "BearerAuth": {
+                        "description": "BearerAuth security",
+                        "credential": "{{BearerAuth}}"
+                    }
+                }
+            }
+        }
+    ],
+    "operations": {
+        "addFavorite": {
+            "operationId": "addFavorite",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/addFavorite/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "addFavorite",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/me/favorites/{sessionId}",
+                        "method": "PUT",
+                        "paths": [
+                            {
+                                "key": "sessionId",
+                                "value": "wcczgxbpcdqrjncxtjndkouxotqmivdh"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "204",
+                "responses": {
+                    "204": {
+                        "expectations": {
+                            "httpStatus": 204
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "createEvent": {
+            "operationId": "createEvent",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/createEvent/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "createEvent",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events",
+                        "method": "POST",
+                        "headers": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "requestBody": {
+                            "mode": "json",
+                            "json": {
+                                "description": "La conférence tech de l'année",
+                                "end_date": "2025-10-17T18:00:00Z",
+                                "lieu": "HEI",
+                                "start_date": "2025-10-15T08:00:00Z",
+                                "title": "Tech Summit 2025"
+                            }
+                        }
+                    }
+                },
+                "defaultResponse": "201",
+                "responses": {
+                    "201": {
+                        "expectations": {
+                            "httpStatus": 201
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "422": {
+                        "expectations": {
+                            "httpStatus": 422
+                        }
+                    }
+                }
+            }
+        },
+        "createQuestion": {
+            "operationId": "createQuestion",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/createQuestion/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "createQuestion",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/sessions/{sessionId}/questions",
+                        "method": "POST",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "ajpgtqnaeenyanrqpudalgmdlptyekdr"
+                            },
+                            {
+                                "key": "sessionId",
+                                "value": "nunrereyutbkdhcnwxjiuujskdayodsb"
+                            }
+                        ],
+                        "headers": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "requestBody": {
+                            "mode": "json",
+                            "json": {
+                                "author_name": "Alice Martin",
+                                "content": "Quels sont les prochains défis pour les LLMs ?"
+                            }
+                        }
+                    }
+                },
+                "defaultResponse": "201",
+                "responses": {
+                    "201": {
+                        "expectations": {
+                            "httpStatus": 201
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    },
+                    "409": {
+                        "expectations": {
+                            "httpStatus": 409
+                        }
+                    },
+                    "422": {
+                        "expectations": {
+                            "httpStatus": 422
+                        }
+                    }
+                }
+            }
+        },
+        "createRoom": {
+            "operationId": "createRoom",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/createRoom/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "createRoom",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/rooms",
+                        "method": "POST",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "sdxomnzbdvdiolnohdckeofwpeomdcqf"
+                            }
+                        ],
+                        "headers": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "requestBody": {
+                            "mode": "json",
+                            "json": {
+                                "name": "Salle NP"
+                            }
+                        }
+                    }
+                },
+                "defaultResponse": "201",
+                "responses": {
+                    "201": {
+                        "expectations": {
+                            "httpStatus": 201
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "422": {
+                        "expectations": {
+                            "httpStatus": 422
+                        }
+                    }
+                }
+            }
+        },
+        "createSession": {
+            "operationId": "createSession",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/createSession/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "createSession",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/sessions",
+                        "method": "POST",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "mrjcexljxhlxbtqyjlxtcjngnoksozmk"
+                            }
+                        ],
+                        "headers": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "requestBody": {
+                            "mode": "json",
+                            "json": {
+                                "capacity": 200,
+                                "description": "qerqwirpduxwmgbtvzpemmgggrzyiqgh",
+                                "end_time": "2025-10-15T10:00:00Z",
+                                "room_id": "hnmfeacgrcnsewhvfffstoewawmtgipx",
+                                "speaker_ids": [
+                                    "lgtlyujuvkxtqanpurkcckzdzhltiork",
+                                    "lgtlyujuvkxtqanpurkcckzdzhltiork",
+                                    "lgtlyujuvkxtqanpurkcckzdzhltiork",
+                                    "lgtlyujuvkxtqanpurkcckzdzhltiork"
+                                ],
+                                "start_time": "2025-10-15T09:00:00Z",
+                                "title": "Introduction à l'IA générative"
+                            }
+                        }
+                    }
+                },
+                "defaultResponse": "201",
+                "responses": {
+                    "201": {
+                        "expectations": {
+                            "httpStatus": 201
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "422": {
+                        "expectations": {
+                            "httpStatus": 422
+                        }
+                    }
+                }
+            }
+        },
+        "createSpeaker": {
+            "operationId": "createSpeaker",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/createSpeaker/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "createSpeaker",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/speakers",
+                        "method": "POST",
+                        "headers": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "requestBody": {
+                            "mode": "json",
+                            "json": {
+                                "bio": "Ingénieure logicielle et conférencière internationale.",
+                                "full_name": "Jane Doe",
+                                "links": [
+                                    {
+                                        "label": "Twitter",
+                                        "url": "https://twitter.com/johndoe"
+                                    }
+                                ],
+                                "photo_url": "https://cdn.eventsync.io/speakers/janedoe.jpg"
+                            }
+                        }
+                    }
+                },
+                "defaultResponse": "201",
+                "responses": {
+                    "201": {
+                        "expectations": {
+                            "httpStatus": 201
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "422": {
+                        "expectations": {
+                            "httpStatus": 422
+                        }
+                    }
+                }
+            }
+        },
+        "deleteEvent": {
+            "operationId": "deleteEvent",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/deleteEvent/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "deleteEvent",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}",
+                        "method": "DELETE",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "grpmxzwgfdfrncxmvywmhcqdfwnlanzq"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "204",
+                "responses": {
+                    "204": {
+                        "expectations": {
+                            "httpStatus": 204
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "deleteRoom": {
+            "operationId": "deleteRoom",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/deleteRoom/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "deleteRoom",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/rooms/{roomId}",
+                        "method": "DELETE",
+                        "paths": [
+                            {
+                                "key": "roomId",
+                                "value": "rvlbcsgwzjosdesiktwaiebrwpbpvpfx"
+                            },
+                            {
+                                "key": "eventId",
+                                "value": "ggjffoqdyjprntrbqqflmxonszphodps"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "204",
+                "responses": {
+                    "204": {
+                        "expectations": {
+                            "httpStatus": 204
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "deleteSession": {
+            "operationId": "deleteSession",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/deleteSession/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "deleteSession",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/sessions/{sessionId}",
+                        "method": "DELETE",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "kibrvzihworwxoofkxvvkpmsuxluqeqe"
+                            },
+                            {
+                                "key": "sessionId",
+                                "value": "xmgyssbndlfuixgzlkoxeflljidkbnuy"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "204",
+                "responses": {
+                    "204": {
+                        "expectations": {
+                            "httpStatus": 204
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "deleteSpeaker": {
+            "operationId": "deleteSpeaker",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/deleteSpeaker/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "deleteSpeaker",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/speakers/{speakerId}",
+                        "method": "DELETE",
+                        "paths": [
+                            {
+                                "key": "speakerId",
+                                "value": "bxasvhtrqimiobllujpbslibtmkhymqp"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "204",
+                "responses": {
+                    "204": {
+                        "expectations": {
+                            "httpStatus": 204
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "getEvent": {
+            "operationId": "getEvent",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/getEvent/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "getEvent",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}",
+                        "method": "GET",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "ryapqgnfhlrkswqcuuoycubhwekozljh"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "getEventSchedule": {
+            "operationId": "getEventSchedule",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/getEventSchedule/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "getEventSchedule",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/schedule",
+                        "method": "GET",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "hqfayijihftwzqgbxsgwbpoqqxklrdbn"
+                            }
+                        ],
+                        "queries": [
+                            {
+                                "key": "room_id",
+                                "value": "qlppyyfktcwymmeufoosjqbwmnjemrxv"
+                            },
+                            {
+                                "key": "date",
+                                "value": "2025-10-15"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "getSession": {
+            "operationId": "getSession",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/getSession/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "getSession",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/sessions/{sessionId}",
+                        "method": "GET",
+                        "paths": [
+                            {
+                                "key": "sessionId",
+                                "value": "omapopvjflpvmdfrhtejonkyctommova"
+                            },
+                            {
+                                "key": "eventId",
+                                "value": "rvhtwgqlvmwajtqomptabupkfwwwqfjk"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "getSpeaker": {
+            "operationId": "getSpeaker",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/getSpeaker/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "getSpeaker",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/speakers/{speakerId}",
+                        "method": "GET",
+                        "paths": [
+                            {
+                                "key": "speakerId",
+                                "value": "lnqqpjicbzkwsfsjddpsrpnvljdsgxvg"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "listEvents": {
+            "operationId": "listEvents",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/listEvents/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "listEvents",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events",
+                        "method": "GET",
+                        "queries": [
+                            {
+                                "key": "page",
+                                "value": 1
+                            },
+                            {
+                                "key": "per_page",
+                                "value": 20
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    }
+                }
+            }
+        },
+        "listFavorites": {
+            "operationId": "listFavorites",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/listFavorites/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "listFavorites",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/me/favorites",
+                        "method": "GET"
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    }
+                }
+            }
+        },
+        "listQuestions": {
+            "operationId": "listQuestions",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/listQuestions/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "listQuestions",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/sessions/{sessionId}/questions",
+                        "method": "GET",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "plqrrnawyrfopnmpjgswugyndxrvyvkx"
+                            },
+                            {
+                                "key": "sessionId",
+                                "value": "bmtymgytcqtcsvtiyrvgmdkgpwwhlunr"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    },
+                    "409": {
+                        "expectations": {
+                            "httpStatus": 409
+                        }
+                    }
+                }
+            }
+        },
+        "listRooms": {
+            "operationId": "listRooms",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/listRooms/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "listRooms",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/rooms",
+                        "method": "GET",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "unbotycdsdyxqywmqxzedpglmwipbsmh"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "listSessions": {
+            "operationId": "listSessions",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/listSessions/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "listSessions",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/sessions",
+                        "method": "GET",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "lkdzvxxocrkulblhprjypkfixymfjdnk"
+                            }
+                        ],
+                        "queries": [
+                            {
+                                "key": "room_id",
+                                "value": "guppxpgkeumefjyvrpoguljltdutqpcm"
+                            },
+                            {
+                                "key": "live_only",
+                                "value": false
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "listSpeakerSessions": {
+            "operationId": "listSpeakerSessions",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/listSpeakerSessions/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "listSpeakerSessions",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/speakers/{speakerId}/sessions",
+                        "method": "GET",
+                        "paths": [
+                            {
+                                "key": "speakerId",
+                                "value": "vixlcufefhfgayhyznyxzemozfikpznm"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "listSpeakers": {
+            "operationId": "listSpeakers",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/listSpeakers/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "listSpeakers",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/speakers",
+                        "method": "GET"
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    }
+                }
+            }
+        },
+        "loginAdmin": {
+            "operationId": "loginAdmin",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/loginAdmin/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "loginAdmin",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/auth/login",
+                        "method": "POST",
+                        "headers": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "requestBody": {
+                            "mode": "json",
+                            "json": {
+                                "email": "admin@gmail.com",
+                                "password": "password"
+                            }
+                        }
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "422": {
+                        "expectations": {
+                            "httpStatus": 422
+                        }
+                    }
+                }
+            }
+        },
+        "removeFavorite": {
+            "operationId": "removeFavorite",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/removeFavorite/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "removeFavorite",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/me/favorites/{sessionId}",
+                        "method": "DELETE",
+                        "paths": [
+                            {
+                                "key": "sessionId",
+                                "value": "skxcmqzxxocppypfzjausxqtohkzzufi"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "204",
+                "responses": {
+                    "204": {
+                        "expectations": {
+                            "httpStatus": 204
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "updateEvent": {
+            "operationId": "updateEvent",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/updateEvent/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "updateEvent",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}",
+                        "method": "PUT",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "fdmmspkgouadfatzgksyiigpobsimahu"
+                            }
+                        ],
+                        "headers": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "requestBody": {
+                            "mode": "json",
+                            "json": {
+                                "description": "La conférence tech de l'année",
+                                "end_date": "2025-10-17T18:00:00Z",
+                                "lieu": "HEI",
+                                "start_date": "2025-10-15T08:00:00Z",
+                                "title": "Tech Summit 2025"
+                            }
+                        }
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    },
+                    "422": {
+                        "expectations": {
+                            "httpStatus": 422
+                        }
+                    }
+                }
+            }
+        },
+        "updateRoom": {
+            "operationId": "updateRoom",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/updateRoom/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "updateRoom",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/rooms/{roomId}",
+                        "method": "PUT",
+                        "paths": [
+                            {
+                                "key": "roomId",
+                                "value": "gxagdzbuqsntulufubuvpohlwqzyinle"
+                            },
+                            {
+                                "key": "eventId",
+                                "value": "ifkakqftqjunxpfaqeappbeaaeqcpygg"
+                            }
+                        ],
+                        "headers": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "requestBody": {
+                            "mode": "json",
+                            "json": {
+                                "name": "Salle NP"
+                            }
+                        }
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    }
+                }
+            }
+        },
+        "updateSession": {
+            "operationId": "updateSession",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/updateSession/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "updateSession",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/sessions/{sessionId}",
+                        "method": "PUT",
+                        "paths": [
+                            {
+                                "key": "eventId",
+                                "value": "gkwlntpeazqrinrsysnyieqtdxhuoshi"
+                            },
+                            {
+                                "key": "sessionId",
+                                "value": "tocusfxukdycuasdcgbwyrvytkonapak"
+                            }
+                        ],
+                        "headers": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "requestBody": {
+                            "mode": "json",
+                            "json": {
+                                "capacity": 200,
+                                "description": "qerqwirpduxwmgbtvzpemmgggrzyiqgh",
+                                "end_time": "2025-10-15T10:00:00Z",
+                                "room_id": "hnmfeacgrcnsewhvfffstoewawmtgipx",
+                                "speaker_ids": [
+                                    "lgtlyujuvkxtqanpurkcckzdzhltiork",
+                                    "lgtlyujuvkxtqanpurkcckzdzhltiork",
+                                    "lgtlyujuvkxtqanpurkcckzdzhltiork",
+                                    "lgtlyujuvkxtqanpurkcckzdzhltiork"
+                                ],
+                                "start_time": "2025-10-15T09:00:00Z",
+                                "title": "Introduction à l'IA générative"
+                            }
+                        }
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    },
+                    "422": {
+                        "expectations": {
+                            "httpStatus": 422
+                        }
+                    }
+                }
+            }
+        },
+        "updateSpeaker": {
+            "operationId": "updateSpeaker",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/updateSpeaker/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "updateSpeaker",
+                "auth": [
+                    "BearerAuth"
+                ],
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/speakers/{speakerId}",
+                        "method": "PUT",
+                        "paths": [
+                            {
+                                "key": "speakerId",
+                                "value": "moyozrrjpmmfeitomrhxhlhzvlkwruod"
+                            }
+                        ],
+                        "headers": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "requestBody": {
+                            "mode": "json",
+                            "json": {
+                                "bio": "Ingénieure logicielle et conférencière internationale.",
+                                "full_name": "Jane Doe",
+                                "links": [
+                                    {
+                                        "label": "Twitter",
+                                        "url": "https://twitter.com/johndoe"
+                                    }
+                                ],
+                                "photo_url": "https://cdn.eventsync.io/speakers/janedoe.jpg"
+                            }
+                        }
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "401": {
+                        "expectations": {
+                            "httpStatus": 401
+                        }
+                    },
+                    "403": {
+                        "expectations": {
+                            "httpStatus": 403
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    },
+                    "422": {
+                        "expectations": {
+                            "httpStatus": 422
+                        }
+                    }
+                }
+            }
+        },
+        "upvoteQuestion": {
+            "operationId": "upvoteQuestion",
+            "scenarios": [
+                {
+                    "key": "happy.path",
+                    "fuzzing": true,
+                    "requests": [
+                        {
+                            "$ref": "#/operations/upvoteQuestion/request",
+                            "fuzzing": true
+                        }
+                    ]
+                }
+            ],
+            "request": {
+                "operationId": "upvoteQuestion",
+                "request": {
+                    "type": "42c",
+                    "details": {
+                        "url": "{{host}}/events/{eventId}/sessions/{sessionId}/questions/{questionId}/upvote",
+                        "method": "POST",
+                        "paths": [
+                            {
+                                "key": "sessionId",
+                                "value": "vilzlnarrvxvscmiakuxbyzccehzhxsi"
+                            },
+                            {
+                                "key": "questionId",
+                                "value": "npiumcrtnlqfmqbjapcxonsjwplgnmic"
+                            },
+                            {
+                                "key": "eventId",
+                                "value": "uvfqrjwmcnifuvhjhfchrhiyqurfvplp"
+                            }
+                        ]
+                    }
+                },
+                "defaultResponse": "200",
+                "responses": {
+                    "200": {
+                        "expectations": {
+                            "httpStatus": 200
+                        }
+                    },
+                    "404": {
+                        "expectations": {
+                            "httpStatus": 404
+                        }
+                    },
+                    "409": {
+                        "expectations": {
+                            "httpStatus": 409
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "environments": {
+        "default": {
+            "variables": {
+                "BearerAuth": {
+                    "from": "environment",
+                    "name": "SCAN42C_SECURITY_BEARERAUTH",
+                    "required": true
+                },
+                "host": {
+                    "from": "environment",
+                    "name": "SCAN42C_HOST",
+                    "required": false,
+                    "default": "http://localhost:3000"
+                }
+            }
+        }
+    }
+}
