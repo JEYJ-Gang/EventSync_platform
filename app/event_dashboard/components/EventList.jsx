@@ -10,7 +10,7 @@ export default function EventList({
 
   return (
 
-    <div className="flex flex-wrap gap-6 p-6">
+    <div className="grid grid-cols-3 gap-6 p-6">
 
       {events?.data?.map((event) => (
 

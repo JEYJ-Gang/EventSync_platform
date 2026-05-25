@@ -2,7 +2,7 @@
 export default function EventCard({ event, openEventModal, }) {
 
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6 w-[350px]">
+    <div className="bg-white rounded-2xl shadow-md p-6 w-full">
 
       <h2 className="text-2xl font-bold mb-3">
         {event.title}
