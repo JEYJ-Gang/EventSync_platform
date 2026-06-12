@@ -1,10 +1,16 @@
 import { speakerRepository } from "../repository/speaker.repository";
 
 export const speakerService = {
-  async listSpeakers({ page, per_page }) {
-    return await speakerRepository.listSpeakers({
-      page,
-      per_page,
-    });
-  },
+
+    async listSpeakers({ page, per_page }) {
+        return await speakerRepository.listSpeakers({
+            page,
+            per_page,
+        });
+    },
+
+    async getSpeakerById(id) {
+        return speakerRepository.getSpeakerById(id);
+    },
+
 };
