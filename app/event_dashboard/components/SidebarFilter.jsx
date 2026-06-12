@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function SidebarFilter() {
+export default function SidebarFilter({ filter, setFilter }) {
 
   const pathname = usePathname();
 
@@ -25,15 +25,28 @@ export default function SidebarFilter() {
           <>
 
 
-            <button className="text-left px-4 py-3 rounded-xl bg-black text-white">
+            <button
+              onClick={() => setFilter("all")}
+              className={`px-4 py-3 rounded-xl text-left ${filter === "all"
+                ? "bg-black text-white"
+                : "hover:bg-gray-100"
+                }`}>
               Tous
             </button>
 
-            <button className="text-left px-4 py-3 rounded-xl hover:bg-gray-100">
+            <button onClick={() => setFilter("today")}
+              className={`px-4 py-3 rounded-xl text-left ${filter === "today"
+                ? "bg-black text-white"
+                : "hover:bg-gray-100"
+                }`}>
               Aujourd`hui
             </button>
 
-            <button className="text-left px-4 py-3 rounded-xl hover:bg-gray-100">
+            <button onClick={() => setFilter("week")}
+              className={`px-4 py-3 rounded-xl text-left ${filter === "week"
+                  ? "bg-black text-white"
+                  : "hover:bg-gray-100"
+                }`}>
               Cette semaine
             </button>
 
