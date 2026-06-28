@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import * as roomService from '../../../../../../service/roomService';
 
 export async function GET(request, { params }) {
-    const { roomId } = params;
+    const { roomId } = await params;
     const room = await roomService.getRoomById(roomId);
     if (!room) return NextResponse.json({ code: 'NOT_FOUND' }, { status: 404 });
     return NextResponse.json(room);
