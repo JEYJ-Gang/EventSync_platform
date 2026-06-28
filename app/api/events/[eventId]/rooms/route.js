@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-// import { verifyAdminToken } from '@/lib/auth'; // Commenté pour les tests
+import { verifyAdminToken } from '@/lib/auth';
 import * as roomService from '../../../../../service/roomService';
 
 export async function GET(request, { params }) {
@@ -9,8 +9,8 @@ export async function GET(request, { params }) {
 }
 
 export async function POST(request, { params }) {
-    // const admin = await verifyAdminToken(request); // Commenté pour les tests
-    // if (!admin) return NextResponse.json({ code: 'FORBIDDEN' }, { status: 403 }); // Commenté pour les tests
+    const admin = await verifyAdminToken(request); // Commenté pour les tests
+    if (!admin) return NextResponse.json({ code: 'FORBIDDEN' }, { status: 403 });
 
     try {
         const body = await request.json();

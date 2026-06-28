@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-// import { verifyAdminToken } from '@/lib/auth'; // Commenté pour les tests
+import { verifyAdminToken } from '@/lib/auth';
 import * as roomService from '../../../../../../service/roomService';
 
 export async function GET(request, { params }) {
@@ -11,8 +11,8 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
     const { roomId } = await params;
-    // const admin = await verifyAdminToken(request); // Commenté pour les tests
-    // if (!admin) return NextResponse.json({ code: 'FORBIDDEN' }, { status: 403 }); // Commenté pour les tests
+    const admin = await verifyAdminToken(request);
+    if (!admin) return NextResponse.json({ code: 'FORBIDDEN' }, { status: 403 });
 
     const body = await request.json();
     const room = await roomService.updateRoom(roomId, body);
@@ -21,8 +21,8 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
     const { roomId } = await params;
-    // const admin = await verifyAdminToken(request); // Commenté pour les tests
-    // if (!admin) return NextResponse.json({ code: 'FORBIDDEN' }, { status: 403 }); // Commenté pour les tests
+    const admin = await verifyAdminToken(request);
+    if (!admin) return NextResponse.json({ code: 'FORBIDDEN' }, { status: 403 });
 
     try {
         await roomService.deleteRoom(roomId);
