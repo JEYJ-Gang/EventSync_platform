@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import HomePage from './dashboard/components/HomePage.jsx';
 
 export default function Home() {
-    redirect("/room?eventId=1");
+    return <HomePage />;
 }
