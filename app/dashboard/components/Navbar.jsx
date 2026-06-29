@@ -4,7 +4,7 @@ import Link from 'next/link';
 const navItems = [
     { label: 'Accueil', href: '/' },
     { label: 'Événements', href: '/event_dashboard' },
-    { label: 'Sessions', href: '/sessions' },
+    { label: 'Sessions', href: '/session' },
     { label: 'Intervenants', href: '/speaker' },
 ];
 
