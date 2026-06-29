@@ -20,7 +20,7 @@ export default function HeroSection() {
                 <Link href="/event_dashboard" className="btn-primary">
                     Voir les événements →
                 </Link>
-                <Link href="/sessions" className="btn-secondary">
+                <Link href="/session" className="btn-secondary">
                     Programme du jour
                 </Link>
             </div>
