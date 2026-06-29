@@ -1,46 +1,116 @@
-import { NextResponse } from 'next/server';
-import { verifyAdminToken } from '@/lib/auth';
-import * as sessionService from '@/services/sessionService';
-
-export async function GET(request, { params }) {
-  const { eventId, sessionId } = params;
-
+import { NextResponse } from "next/server";
+import { sessionService } from "../../../../../../service/session.service";
+import { verifyAdminToken } from "../../../../../../lib/auth";
+ 
+export async function GET(request, context) {
   try {
-    const session = await sessionService.getSessionById(eventId, sessionId);
-    if (!session) return NextResponse.json({ code: 'NOT_FOUND', message: 'Session introuvable.' }, { status: 404 });
-    return NextResponse.json(session);
+    const { params } = context;
+    const resolvedParams = await params;
+    const sessionId = parseInt(resolvedParams.sessionId);
+ 
+    if (isNaN(sessionId)) {
+      return NextResponse.json(
+        {
+          code: "INVALID_ID",
+          message: "sessionId invalide"
+        },
+        { status: 422 }
+      );
+    }
+ 
+    const session = await sessionService.getSessionById(sessionId);
+ 
+    return NextResponse.json(session, { status: 200 });
+ 
   } catch (error) {
-    return NextResponse.json({ code: 'INTERNAL_ERROR', message: error.message }, { status: 500 });
+    console.error(error);
+    return NextResponse.json(
+      {
+        code: error.code || "INTERNAL_ERROR",
+        message: error.message || "Erreur serveur",
+      },
+      { status: error.status || 500 }
+    );
   }
 }
-
-export async function PUT(request, { params }) {
-  const { eventId, sessionId } = params;
-  const admin = await verifyAdminToken(request);
-  if (!admin) return NextResponse.json({ code: 'FORBIDDEN', message: 'Accès réservé aux organisateurs.' }, { status: 403 });
-
+ 
+export async function PUT(request, context) {
   try {
+    const { params } = context;
+    const resolvedParams = await params;
+    const sessionId = parseInt(resolvedParams.sessionId);
+ 
+    if (isNaN(sessionId)) {
+      return NextResponse.json(
+        {
+          code: "INVALID_ID",
+          message: "sessionId invalide"
+        },
+        { status: 422 }
+      );
+    }
+ 
+    const admin = await verifyAdminToken(request);
+    if (!admin) {
+      return NextResponse.json(
+        { code: "FORBIDDEN", message: "Access denied." },
+        { status: 403 }
+      );
+    }
+ 
     const body = await request.json();
-    const session = await sessionService.updateSession(eventId, sessionId, body);
-    return NextResponse.json(session);
+    const session = await sessionService.updateSession(sessionId, body);
+ 
+    return NextResponse.json(session, { status: 200 });
+ 
   } catch (error) {
-    if (error.message === 'Session not found')
-      return NextResponse.json({ code: 'NOT_FOUND', message: 'Session introuvable.' }, { status: 404 });
-    return NextResponse.json({ code: 'INTERNAL_ERROR', message: error.message }, { status: 500 });
+    console.error(error);
+    return NextResponse.json(
+      {
+        code: error.code || "INTERNAL_ERROR",
+        message: error.message || "Erreur serveur",
+      },
+      { status: error.status || 500 }
+    );
   }
 }
-
-export async function DELETE(request, { params }) {
-  const { eventId, sessionId } = params;
-  const admin = await verifyAdminToken(request);
-  if (!admin) return NextResponse.json({ code: 'FORBIDDEN', message: 'Accès réservé aux organisateurs.' }, { status: 403 });
-
+ 
+export async function DELETE(request, context) {
   try {
-    await sessionService.deleteSession(eventId, sessionId);
+    const { params } = context;
+    const resolvedParams = await params;
+    const sessionId = parseInt(resolvedParams.sessionId);
+ 
+    if (isNaN(sessionId)) {
+      return NextResponse.json(
+        {
+          code: "INVALID_ID",
+          message: "sessionId invalide"
+        },
+        { status: 422 }
+      );
+    }
+ 
+    const admin = await verifyAdminToken(request);
+    if (!admin) {
+      return NextResponse.json(
+        { code: "FORBIDDEN", message: "Access denied." },
+        { status: 403 }
+      );
+    }
+ 
+    await sessionService.deleteSession(sessionId);
+ 
     return new NextResponse(null, { status: 204 });
+ 
   } catch (error) {
-    if (error.message === 'Session not found')
-      return NextResponse.json({ code: 'NOT_FOUND', message: 'Session introuvable.' }, { status: 404 });
-    return NextResponse.json({ code: 'INTERNAL_ERROR', message: error.message }, { status: 500 });
+    console.error(error);
+    return NextResponse.json(
+      {
+        code: error.code || "INTERNAL_ERROR",
+        message: error.message || "Erreur serveur",
+      },
+      { status: error.status || 500 }
+    );
   }
 }
