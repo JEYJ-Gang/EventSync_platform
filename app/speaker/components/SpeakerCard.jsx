@@ -10,39 +10,35 @@ export default function SpeakerCard({ speaker }) {
   return (
     <Link
       href={`/speakers/${speaker.id_speaker}`}
-      className="bg-white rounded-2xl shadow-md hover:shadow-xl transition p-5 flex flex-col items-center text-center"
+      className="speaker-card"
     >
 
-      {/* AVATAR */}
-      <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center mb-4">
-
+      <div className="speaker-avatar">
         {speaker.photo_url ? (
           <img
             src={speaker.photo_url}
             alt={`${speaker.first_name} ${speaker.last_name}`}
-            className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-xl font-bold text-gray-600">
+          <span>
             {getInitials(speaker.first_name, speaker.last_name)}
           </span>
         )}
-
       </div>
 
-      {/* NAME */}
-      <h3 className="text-lg font-semibold">
-        {speaker.first_name} {speaker.last_name}
-      </h3>
+      <div className="speaker-info">
+        <h3 className="speaker-name">
+          {speaker.first_name} {speaker.last_name}
+        </h3>
 
-      {/* BIO SHORT */}
-      {speaker.biography && (
-        <p className="text-sm text-gray-500 mt-2 line-clamp-3">
-          {speaker.biography}
-        </p>
-      )}
+        {speaker.biography && (
+          <p className="speaker-bio">
+            {speaker.biography}
+          </p>
+        )}
+      </div>
 
-      <span className="text-xs text-blue-500 mt-3">
+      <span className="speaker-link">
         Voir profil →
       </span>
 
