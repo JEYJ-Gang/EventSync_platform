@@ -80,9 +80,12 @@ model Intervene {
 }
 
 model Organizer {
-  id_organizer  Int    @id @default(autoincrement())
-  full_name     String
-  email         String @unique
+  id_organizer  Int      @id @default(autoincrement())
+  full_name     String   @db.VarChar(150)
+  email         String   @unique @db.VarChar(150)
   password_hash String
-  role          String
+  role          String   @default("ADMIN")
+  created_at    DateTime @default(now())
+
+  @@map("organizer")
 }
