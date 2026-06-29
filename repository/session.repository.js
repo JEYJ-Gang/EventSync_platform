@@ -34,7 +34,7 @@ export const sessionRepository = {
   },
 
   async create(data) {
-    const { title, description, start_time, end_time, room_id, capacity, speaker_ids, eventId } = data;
+    const { title, description, start_time, end_time, room_id, max_participant, speaker_ids, eventId } = data;
     return prisma.session.create({
       data: {
         id_event: eventId,
@@ -43,7 +43,7 @@ export const sessionRepository = {
         start_time: new Date(start_time),
         end_time: new Date(end_time),
         id_room: parseInt(room_id),
-        capacity: capacity || null,
+        max_participant: max_participant || null,
         intervenes: {
           create: speaker_ids.map(speakerId => ({
             id_speaker: parseInt(speakerId),
@@ -59,7 +59,7 @@ export const sessionRepository = {
   },
 
   async update(sessionId, data) {
-    const { title, description, start_time, end_time, room_id, capacity, speaker_ids } = data;
+    const { title, description, start_time, end_time, room_id, max_participant, speaker_ids } = data;
 
     if (speaker_ids) {
       await prisma.intervene.deleteMany({ where: { id_session: sessionId } });
@@ -73,7 +73,7 @@ export const sessionRepository = {
         start_time: start_time ? new Date(start_time) : undefined,
         end_time: end_time ? new Date(end_time) : undefined,
         id_room: room_id ? parseInt(room_id) : undefined,
-        capacity,
+        max_participant: max_participant || undefined,
         intervenes: speaker_ids
           ? { create: speaker_ids.map(speakerId => ({ id_speaker: parseInt(speakerId) })) }
           : undefined,
