@@ -5,19 +5,9 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 async function fetchAllSessions() {
     try {
-        const eventsRes = await fetch(`${BASE_URL}/api/events`, { cache: 'no-store' });
-        const eventsJson = await eventsRes.json();
-        const events = eventsJson.data ?? [];
-
-        const allSessions = await Promise.all(
-            events.map(async (event) => {
-                const res = await fetch(`${BASE_URL}/api/events/${event.id_event}/sessions`, { cache: 'no-store' });
-                const json = await res.json();
-                return (json.data ?? []).map(s => ({ ...s, eventId: event.id_event, eventTitle: event.title }));
-            })
-        );
-
-        return allSessions.flat();
+        const res = await fetch(`${BASE_URL}/api/events/1/sessions`, { cache: 'no-store' });
+        const json = await res.json();
+        return (json.data ?? []).map(s => ({ ...s, eventId: 1 }));
     } catch {
         return [];
     }
