@@ -28,4 +28,18 @@ export const speakerRepository = {
         });
     },
 
+    async createSpeaker(data) {
+        return prisma.speaker.create({
+            data,
+        });
+    },
+
+    async deleteSpeaker(id) {
+        return prisma.speaker.delete({
+            where: {
+                id_speaker: id,
+            },
+        });
+    },
+
 };
