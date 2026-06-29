@@ -3,9 +3,9 @@ import Link from 'next/link';
 
 const navItems = [
     { label: 'Accueil', href: '/' },
-    { label: 'Événements', href: '/events' },
+    { label: 'Événements', href: '/event_dashboard' },
     { label: 'Sessions', href: '/sessions' },
-    { label: 'Intervenants', href: '/speakers' },
+    { label: 'Intervenants', href: '/speaker' },
 ];
 
 export default function Navbar() {
