@@ -1,129 +1,321 @@
-import { PrismaClient } from '@prisma/client';
+import { sessionRepository } from '../repository/session.repository';
+import { prisma } from '../lib/prisma';
 
-const prisma = new PrismaClient();
-
-
-function addLiveFlag(session) {
+function isSessionLive(session) {
   const now = new Date();
-  return {
-    ...session,
-    is_live: now >= session.start_time && now <= session.end_time,
-  };
+  const nowTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+
+  const start = new Date(session.start_time);
+  const startTime = start.getUTCHours() * 60 + start.getUTCMinutes();
+
+  const end = new Date(session.end_time);
+  const endTime = end.getUTCHours() * 60 + end.getUTCMinutes();
+
+  console.log("NOW:", nowTime, "START:", startTime, "END:", endTime);
+
+  return nowTime >= startTime && nowTime <= endTime;
 }
 
-function toSummary(session) {
+function mapSession(session) {
   return {
-    id: session.id,
+    id: session.id_session,
     title: session.title,
+    description: session.description,
     start_time: session.start_time,
     end_time: session.end_time,
-    is_live: addLiveFlag(session).is_live,
-    room: session.room,
-    speakers: session.speakers.map(s => ({
-      id: s.id,
-      full_name: s.full_name,
-      photo_url: s.photo_url,
+    capacity: session.capacity,
+    is_live: isSessionLive(session),
+    room: session.room
+      ? {
+          id: session.room.id_room,
+          name: session.room.name,
+        }
+      : null,
+    speakers: (session.intervenes || []).map(i => ({
+      id: i.speaker.id_speaker,
+      full_name: `${i.speaker.first_name} ${i.speaker.last_name}`,
+      photo_url: i.speaker.photo_url,
+    })),
+    questions: (session.questions || []).map(q => ({
+      id: q.id_question,
+      content: q.content,
+      author_name: q.author_name,
+      upvote_count: q.upvote,
+      created_at: q.creation_datetime,
     })),
   };
 }
 
-export async function listSessionsByEvent(eventId, { room_id, live_only, date } = {}) {
-  const where = { eventId };
+export const sessionService = {
+  async listSessionsByEvent(eventId, { roomId, liveOnly }) {
+    const event = await prisma.event.findUnique({
+      where: { id_event: eventId }
+    });
 
-  if (room_id) where.roomId = room_id;
-  if (date) {
-    const start = new Date(date);
-    const end = new Date(date);
-    end.setDate(end.getDate() + 1);
-    where.start_time = { gte: start, lt: end };
-  }
+    if (!event) {
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Event not found'
+      };
+    }
 
-  const sessions = await prisma.session.findMany({
-    where,
-    include: {
-      room: true,
-      speakers: { select: { id: true, full_name: true, photo_url: true } },
-    },
-    orderBy: { start_time: 'asc' },
-  });
+    const sessions = await sessionRepository.findByEvent({ eventId, roomId });
 
-  let enriched = sessions.map(s => ({ ...s, is_live: addLiveFlag(s).is_live }));
+    let mapped = sessions.map(mapSession);
 
-  if (live_only !== undefined) {
-    const live = live_only === true || live_only === 'true';
-    enriched = enriched.filter(s => s.is_live === live);
-  }
+    if (liveOnly !== undefined) {
+      mapped = mapped.filter(s => s.is_live === (liveOnly === 'true' || liveOnly === true));
+    }
 
-  return enriched.map(toSummary);
-}
+    return {
+      data: mapped,
+      total: mapped.length
+    };
+  },
 
-export async function getSessionById(eventId, sessionId) {
-  const session = await prisma.session.findFirst({
-    where: { id: sessionId, eventId },
-    include: {
-      room: true,
-      speakers: { select: { id: true, full_name: true, photo_url: true } },
-      questions: {
-        orderBy: { upvote_count: 'desc' },
-        select: { id: true, content: true, author_name: true, upvote_count: true, created_at: true },
-      },
-    },
-  });
+  async getSessionById(sessionId) {
+    if (isNaN(sessionId)) {
+      throw {
+        status: 422,
+        code: "INVALID_ID",
+        message: "sessionId invalide"
+      };
+    }
 
-  if (!session) return null;
+    const session = await sessionRepository.findById(sessionId);
 
-  const enriched = addLiveFlag(session);
-  return { ...enriched, questions: enriched.is_live ? enriched.questions : [] };
-}
+    if (!session) {
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
+      };
+    }
 
-export async function createSession(eventId, data) {
-  const { speaker_ids, room_id, ...sessionData } = data;
+    return mapSession(session);
+  },
 
-  const event = await prisma.event.findUnique({ where: { id: eventId } });
-  if (!event) throw new Error('Event not found');
+  async createSession(eventId, payload) {
+    if (!payload.title || !payload.start_time || !payload.end_time || !payload.room_id || !payload.speaker_ids) {
+      throw {
+        status: 422,
+        code: 'UNPROCESSABLE_ENTITY',
+        message: 'Missing required fields'
+      };
+    }
 
-  const session = await prisma.session.create({
-    data: {
-      ...sessionData,
-      eventId,
-      roomId: room_id,
-      speakers: { connect: speaker_ids.map(id => ({ id })) },
-    },
-    include: {
-      room: true,
-      speakers: { select: { id: true, full_name: true, photo_url: true } },
-    },
-  });
+    const startDate = new Date(payload.start_time);
+    const endDate = new Date(payload.end_time);
 
-  return addLiveFlag(session);
-}
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      throw {
+        status: 422,
+        code: "INVALID_DATE",
+        message: "Format de date invalide",
+      };
+    }
 
-export async function updateSession(eventId, sessionId, data) {
-  const { speaker_ids, room_id, ...sessionData } = data;
+    if (startDate >= endDate) {
+      throw {
+        status: 422,
+        code: "INVALID_DATE_RANGE",
+        message: "start_time must be before end_time",
+      };
+    }
 
-  const session = await prisma.session.findFirst({ where: { id: sessionId, eventId } });
-  if (!session) throw new Error('Session not found');
+    const event = await prisma.event.findUnique({
+      where: { id_event: eventId }
+    });
 
-  const updated = await prisma.session.update({
-    where: { id: sessionId },
-    data: {
-      ...sessionData,
-      roomId: room_id,
-      speakers: speaker_ids ? { set: [], connect: speaker_ids.map(id => ({ id })) } : undefined,
-    },
-    include: {
-      room: true,
-      speakers: { select: { id: true, full_name: true, photo_url: true } },
-    },
-  });
+    if (!event) {
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Event not found'
+      };
+    }
 
-  return addLiveFlag(updated);
-}
+    const session = await sessionRepository.create({
+      ...payload,
+      eventId
+    });
 
-export async function deleteSession(eventId, sessionId) {
-  const session = await prisma.session.findFirst({ where: { id: sessionId, eventId } });
-  if (!session) throw new Error('Session not found');
+    return mapSession(session);
+  },
 
-  await prisma.session.delete({ where: { id: sessionId } });
-  return true;
-}
+  async updateSession(sessionId, payload) {
+    if (isNaN(sessionId)) {
+      throw {
+        status: 422,
+        code: "INVALID_ID",
+        message: "sessionId invalide"
+      };
+    }
+
+    const session = await sessionRepository.findById(sessionId);
+
+    if (!session) {
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
+      };
+    }
+
+    if (payload.start_time && payload.end_time) {
+      const startDate = new Date(payload.start_time);
+      const endDate = new Date(payload.end_time);
+
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        throw {
+          status: 422,
+          code: "INVALID_DATE",
+          message: "Format de date invalide",
+        };
+      }
+
+      if (startDate >= endDate) {
+        throw {
+          status: 422,
+          code: "INVALID_DATE_RANGE",
+          message: "start_time must be before end_time",
+        };
+      }
+    }
+
+    const updated = await sessionRepository.update(sessionId, payload);
+
+    return mapSession(updated);
+  },
+
+  async deleteSession(sessionId) {
+    if (isNaN(sessionId)) {
+      throw {
+        status: 422,
+        code: "INVALID_ID",
+        message: "sessionId invalide"
+      };
+    }
+
+    const session = await sessionRepository.findById(sessionId);
+
+    if (!session) {
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
+      };
+    }
+
+    await sessionRepository.delete(sessionId);
+  },
+
+  async listQuestions(sessionId) {
+    if (isNaN(sessionId)) {
+      throw {
+        status: 422,
+        code: "INVALID_ID",
+        message: "sessionId invalide"
+      };
+    }
+
+    const session = await sessionRepository.findById(sessionId);
+
+    if (!session) {
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
+      };
+    }
+
+    if (!isSessionLive(session)) {
+      throw {
+        status: 409,
+        code: 'SESSION_NOT_LIVE',
+        message: 'Questions only available during live'
+      };
+    }
+
+    return await sessionRepository.findQuestionsBySession(sessionId);
+  },
+
+  async createQuestion(sessionId, payload) {
+    if (isNaN(sessionId)) {
+      throw {
+        status: 422,
+        code: "INVALID_ID",
+        message: "sessionId invalide"
+      };
+    }
+
+    if (!payload.content) {
+      throw {
+        status: 422,
+        code: "UNPROCESSABLE_ENTITY",
+        message: "content is required"
+      };
+    }
+
+    const session = await sessionRepository.findById(sessionId);
+
+    if (!session) {
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
+      };
+    }
+
+    if (!isSessionLive(session)) {
+      throw {
+        status: 409,
+        code: 'SESSION_NOT_LIVE',
+        message: 'Cannot post question outside live session'
+      };
+    }
+
+    return await sessionRepository.createQuestion(sessionId, payload);
+  },
+
+  async upvoteQuestion(questionId, sessionId) {
+    if (isNaN(questionId) || isNaN(sessionId)) {
+      throw {
+        status: 422,
+        code: "INVALID_ID",
+        message: "questionId ou sessionId invalide"
+      };
+    }
+
+    const session = await sessionRepository.findById(sessionId);
+
+    if (!session) {
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
+      };
+    }
+
+    if (!isSessionLive(session)) {
+      throw {
+        status: 409,
+        code: 'SESSION_NOT_LIVE',
+        message: 'Upvote only during live session'
+      };
+    }
+
+    const question = await sessionRepository.findQuestionById(questionId, sessionId);
+
+    if (!question) {
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Question not found'
+      };
+    }
+
+    return await sessionRepository.upvoteQuestion(questionId);
+  },
+};

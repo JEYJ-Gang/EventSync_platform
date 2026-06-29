@@ -1,33 +1,25 @@
 import { NextResponse } from "next/server";
-import { sessionService } from "../../../../../service/session.service";
-import { verifyAdminToken } from "../../../../../lib/auth";
+import { sessionService } from "../../../../../../../service/session.service";
  
 export async function GET(request, context) {
   try {
     const { params } = context;
     const resolvedParams = await params;
-    const eventId = parseInt(resolvedParams.eventId);
+    const sessionId = parseInt(resolvedParams.sessionId);
  
-    if (isNaN(eventId)) {
+    if (isNaN(sessionId)) {
       return NextResponse.json(
         {
           code: "INVALID_ID",
-          message: "eventId manquant"
+          message: "sessionId invalide"
         },
         { status: 422 }
       );
     }
  
-    const { searchParams } = new URL(request.url);
-    const roomId = searchParams.get("room_id");
-    const liveOnly = searchParams.get("live_only");
+    const questions = await sessionService.listQuestions(sessionId);
  
-    const result = await sessionService.listSessionsByEvent(eventId, { 
-      roomId, 
-      liveOnly 
-    });
- 
-    return NextResponse.json(result, { status: 200 });
+    return NextResponse.json(questions, { status: 200 });
  
   } catch (error) {
     console.error(error);
@@ -45,30 +37,22 @@ export async function POST(request, context) {
   try {
     const { params } = context;
     const resolvedParams = await params;
-    const eventId = parseInt(resolvedParams.eventId);
+    const sessionId = parseInt(resolvedParams.sessionId);
  
-    if (isNaN(eventId)) {
+    if (isNaN(sessionId)) {
       return NextResponse.json(
         {
           code: "INVALID_ID",
-          message: "eventId manquant"
+          message: "sessionId invalide"
         },
         { status: 422 }
       );
     }
  
-    const admin = await verifyAdminToken(request);
-    if (!admin) {
-      return NextResponse.json(
-        { code: "FORBIDDEN", message: "Access denied." },
-        { status: 403 }
-      );
-    }
- 
     const body = await request.json();
-    const session = await sessionService.createSession(eventId, body);
+    const question = await sessionService.createQuestion(sessionId, body);
  
-    return NextResponse.json(session, { status: 201 });
+    return NextResponse.json(question, { status: 201 });
  
   } catch (error) {
     console.error(error);
