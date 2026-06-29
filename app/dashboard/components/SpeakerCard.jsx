@@ -10,7 +10,7 @@ export default function SpeakerCard({ speaker }) {
         <Link href={`/speakers/${speaker.id_speaker}`} className="speaker-card">
             <div className="speaker-avatar">
                 {speaker.photo_url ? (
-                    <img src={speaker.photo_url} alt={speaker.first_name} />
+                    <image src={speaker.photo_url} alt={speaker.first_name} />
                 ) : (
                     <span>{getInitials(speaker.first_name, speaker.last_name)}</span>
                 )}
