@@ -29,3 +29,23 @@ export async function GET(request) {
     );
   }
 }
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+
+    const speaker = await speakerService.createSpeaker(body);
+
+    return NextResponse.json(speaker, { status: 201 });
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        code: "CREATE_SPEAKER_ERROR",
+        message: error.message || "Erreur lors de la création",
+      },
+      { status: 500 }
+    );
+  }
+}

@@ -30,3 +30,26 @@ export async function GET(request, { params }) {
     );
   }
 }
+
+export async function DELETE(request, { params }) {
+  try {
+    const { speakerId } = await params;
+
+    await speakerService.deleteSpeaker(Number(speakerId));
+
+    return NextResponse.json(
+      { message: "Speaker deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        code: "DELETE_SPEAKER_ERROR",
+        message: error.message || "Erreur suppression speaker",
+      },
+      { status: 500 }
+    );
+  }
+}
