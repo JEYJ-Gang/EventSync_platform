@@ -17,7 +17,7 @@ export default function HeroSection() {
                 voix qui les font vivre. Aucun compte requis.
             </p>
             <div className="hero-actions">
-                <Link href="/events" className="btn-primary">
+                <Link href="/event_dashboard" className="btn-primary">
                     Voir les événements →
                 </Link>
                 <Link href="/sessions" className="btn-secondary">

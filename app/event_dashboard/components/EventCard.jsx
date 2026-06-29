@@ -1,27 +1,28 @@
+export default function EventCard({ event, openEventModal }) {
+    return (
+        <div className="event-card" onClick={() => openEventModal(event.id)}>
+            <div className="event-card-header">
+                <div className="event-emoji">📅</div>
+                <span className="event-status status-upcoming">À venir</span>
+            </div>
 
-export default function EventCard({ event, openEventModal, }) {
+            <h3 className="event-title">{event.title}</h3>
+            <p className="event-desc">{event.description || "Aucune description fournie."}</p>
 
-  return (
-    <div className="bg-white rounded-2xl shadow-md p-6 w-full">
-
-      <h2 className="text-2xl font-bold mb-3">
-        {event.title}
-      </h2>
-
-      <p className="text-gray-500 mb-2">
-        {new Date(event.start_date).toLocaleDateString()}
-      </p>
-
-      <p className="mb-6">
-        {event.description}
-      </p>
-
-      <button 
-        onClick={() => openEventModal(event.id)}
-        className="bg-black text-white px-4 py-2 rounded-xl">
-        Voir les détails
-      </button>
-
-    </div>
-  );
+            <div className="event-footer">
+                <div className="event-meta">
+          <span className="event-date">
+            {new Date(event.start_date).toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            })}
+          </span>
+                    <span className="event-location max-w-[120px] truncate">
+            📍 {event.location || "Distanciel"}
+          </span>
+                </div>
+            </div>
+        </div>
+    );
 }
