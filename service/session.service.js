@@ -1,8 +1,22 @@
 import { sessionRepository } from '../repository/session.repository';
-import prisma from '../lib/prisma';
+import { prisma } from '../lib/prisma';
+
+function isSessionLive(session) {
+  const now = new Date();
+  const nowTime = now.getUTCHours() * 60 + now.getUTCMinutes();
+
+  const start = new Date(session.start_time);
+  const startTime = start.getUTCHours() * 60 + start.getUTCMinutes();
+
+  const end = new Date(session.end_time);
+  const endTime = end.getUTCHours() * 60 + end.getUTCMinutes();
+
+  console.log("NOW:", nowTime, "START:", startTime, "END:", endTime);
+
+  return nowTime >= startTime && nowTime <= endTime;
+}
 
 function mapSession(session) {
-  const now = new Date();
   return {
     id: session.id_session,
     title: session.title,
@@ -10,7 +24,7 @@ function mapSession(session) {
     start_time: session.start_time,
     end_time: session.end_time,
     capacity: session.capacity,
-    is_live: now >= session.start_time && now <= session.end_time,
+    is_live: isSessionLive(session),
     room: session.room
       ? {
           id: session.room.id_room,
@@ -26,88 +40,37 @@ function mapSession(session) {
       id: q.id_question,
       content: q.content,
       author_name: q.author_name,
-      upvote_count: q.upvote_count,
-      created_at: q.created_at,
+      upvote_count: q.upvote,
+      created_at: q.creation_datetime,
     })),
   };
 }
 
 export const sessionService = {
-  async getEventSchedule({ eventId, roomId, date }) {
-    if (isNaN(eventId)) {
-      throw {
-        status: 422,
-        code: "UNPROCESSABLE_ENTITY",
-        message: "Invalid eventId"
-      };
-    }
-
-    const sessions = await sessionRepository.findByEvent({
-      eventId,
-      roomId,
-      date,
+  async listSessionsByEvent(eventId, { roomId, liveOnly }) {
+    const event = await prisma.event.findUnique({
+      where: { id_event: eventId }
     });
 
-    if (!sessions.length) {
+    if (!event) {
       throw {
         status: 404,
-        code: "NOT_FOUND",
-        message: "No sessions found"
+        code: 'NOT_FOUND',
+        message: 'Event not found'
       };
     }
 
-    const now = new Date();
-    const mapped = sessions.map(session => ({
-      id: session.id_session,
-      title: session.title,
-      description: session.description,
-      start_time: session.start_time,
-      end_time: session.end_time,
-      is_live: now >= session.start_time && now <= session.end_time,
-      room: {
-        id: session.room.id_room,
-        name: session.room.name
-      },
-      speakers: session.intervenes.map(i => ({
-        id: i.speaker.id_speaker,
-        full_name: `${i.speaker.first_name} ${i.speaker.last_name}`,
-        photo_url: i.speaker.photo_url
-      }))
-    }));
+    const sessions = await sessionRepository.findByEvent({ eventId, roomId });
+
+    let mapped = sessions.map(mapSession);
+
+    if (liveOnly !== undefined) {
+      mapped = mapped.filter(s => s.is_live === (liveOnly === 'true' || liveOnly === true));
+    }
 
     return {
       data: mapped,
       total: mapped.length
-    };
-  },
-
-  async listSessionsByEvent(eventId, { roomId, liveOnly }) {
-    const event = await prisma.event.findUnique({ 
-      where: { id_event: eventId } 
-    });
-    
-    if (!event) {
-      throw { 
-        status: 404, 
-        code: 'NOT_FOUND', 
-        message: 'Event not found' 
-      };
-    }
-
-    const sessions = await sessionRepository.findByEvent({
-      eventId,
-      roomId,
-    });
-
-    let mapped = sessions.map(mapSession);
-    
-    if (liveOnly !== undefined) {
-      mapped = mapped.filter(s => s.is_live === (liveOnly === 'true' || liveOnly === true));
-    }
-    
-    return { 
-      data: mapped, 
-      total: mapped.length 
     };
   },
 
@@ -121,24 +84,24 @@ export const sessionService = {
     }
 
     const session = await sessionRepository.findById(sessionId);
-    
+
     if (!session) {
-      throw { 
-        status: 404, 
-        code: 'NOT_FOUND', 
-        message: 'Session not found' 
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
       };
     }
-    
+
     return mapSession(session);
   },
 
   async createSession(eventId, payload) {
     if (!payload.title || !payload.start_time || !payload.end_time || !payload.room_id || !payload.speaker_ids) {
-      throw { 
-        status: 422, 
-        code: 'UNPROCESSABLE_ENTITY', 
-        message: 'Missing required fields' 
+      throw {
+        status: 422,
+        code: 'UNPROCESSABLE_ENTITY',
+        message: 'Missing required fields'
       };
     }
 
@@ -161,23 +124,23 @@ export const sessionService = {
       };
     }
 
-    const event = await prisma.event.findUnique({ 
-      where: { id_event: eventId } 
+    const event = await prisma.event.findUnique({
+      where: { id_event: eventId }
     });
-    
+
     if (!event) {
-      throw { 
-        status: 404, 
-        code: 'NOT_FOUND', 
-        message: 'Event not found' 
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Event not found'
       };
     }
 
-    const session = await sessionRepository.create({ 
-      ...payload, 
-      eventId 
+    const session = await sessionRepository.create({
+      ...payload,
+      eventId
     });
-    
+
     return mapSession(session);
   },
 
@@ -191,12 +154,12 @@ export const sessionService = {
     }
 
     const session = await sessionRepository.findById(sessionId);
-    
+
     if (!session) {
-      throw { 
-        status: 404, 
-        code: 'NOT_FOUND', 
-        message: 'Session not found' 
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
       };
     }
 
@@ -222,7 +185,7 @@ export const sessionService = {
     }
 
     const updated = await sessionRepository.update(sessionId, payload);
-    
+
     return mapSession(updated);
   },
 
@@ -236,12 +199,12 @@ export const sessionService = {
     }
 
     const session = await sessionRepository.findById(sessionId);
-    
+
     if (!session) {
-      throw { 
-        status: 404, 
-        code: 'NOT_FOUND', 
-        message: 'Session not found' 
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
       };
     }
 
@@ -258,23 +221,20 @@ export const sessionService = {
     }
 
     const session = await sessionRepository.findById(sessionId);
-    
+
     if (!session) {
-      throw { 
-        status: 404, 
-        code: 'NOT_FOUND', 
-        message: 'Session not found' 
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
       };
     }
 
-    const now = new Date();
-    const isLive = now >= session.start_time && now <= session.end_time;
-    
-    if (!isLive) {
-      throw { 
-        status: 409, 
-        code: 'SESSION_NOT_LIVE', 
-        message: 'Questions only available during live' 
+    if (!isSessionLive(session)) {
+      throw {
+        status: 409,
+        code: 'SESSION_NOT_LIVE',
+        message: 'Questions only available during live'
       };
     }
 
@@ -299,23 +259,20 @@ export const sessionService = {
     }
 
     const session = await sessionRepository.findById(sessionId);
-    
+
     if (!session) {
-      throw { 
-        status: 404, 
-        code: 'NOT_FOUND', 
-        message: 'Session not found' 
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
       };
     }
 
-    const now = new Date();
-    const isLive = now >= session.start_time && now <= session.end_time;
-    
-    if (!isLive) {
-      throw { 
-        status: 409, 
-        code: 'SESSION_NOT_LIVE', 
-        message: 'Cannot post question outside live session' 
+    if (!isSessionLive(session)) {
+      throw {
+        status: 409,
+        code: 'SESSION_NOT_LIVE',
+        message: 'Cannot post question outside live session'
       };
     }
 
@@ -332,33 +289,30 @@ export const sessionService = {
     }
 
     const session = await sessionRepository.findById(sessionId);
-    
+
     if (!session) {
-      throw { 
-        status: 404, 
-        code: 'NOT_FOUND', 
-        message: 'Session not found' 
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Session not found'
       };
     }
 
-    const now = new Date();
-    const isLive = now >= session.start_time && now <= session.end_time;
-    
-    if (!isLive) {
-      throw { 
-        status: 409, 
-        code: 'SESSION_NOT_LIVE', 
-        message: 'Upvote only during live session' 
+    if (!isSessionLive(session)) {
+      throw {
+        status: 409,
+        code: 'SESSION_NOT_LIVE',
+        message: 'Upvote only during live session'
       };
     }
 
     const question = await sessionRepository.findQuestionById(questionId, sessionId);
-    
+
     if (!question) {
-      throw { 
-        status: 404, 
-        code: 'NOT_FOUND', 
-        message: 'Question not found' 
+      throw {
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Question not found'
       };
     }
 

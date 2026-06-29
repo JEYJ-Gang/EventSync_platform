@@ -1,4 +1,4 @@
-import prisma from '../lib/prisma';
+import { prisma } from '../lib/prisma';
 
 export const sessionRepository = {
   async findByEvent({ eventId, roomId, date }) {
@@ -15,18 +15,10 @@ export const sessionRepository = {
       },
       include: {
         room: true,
-        intervenes: {
-          include: {
-            speaker: true
-          }
-        },
-        questions: {
-          orderBy: { upvote_count: 'desc' },
-        },
+        intervenes: { include: { speaker: true } },
+        questions: { orderBy: { upvote: 'desc' } },
       },
-      orderBy: {
-        start_time: "asc"
-      }
+      orderBy: { start_time: "asc" }
     });
   },
 
@@ -35,14 +27,8 @@ export const sessionRepository = {
       where: { id_session: sessionId },
       include: {
         room: true,
-        intervenes: {
-          include: {
-            speaker: true,
-          },
-        },
-        questions: {
-          orderBy: { upvote_count: 'desc' },
-        },
+        intervenes: { include: { speaker: true } },
+        questions: { orderBy: { upvote: 'desc' } },
       },
     });
   },
@@ -66,14 +52,8 @@ export const sessionRepository = {
       },
       include: {
         room: true,
-        intervenes: {
-          include: {
-            speaker: true,
-          },
-        },
-        questions: {
-          orderBy: { upvote_count: 'desc' },
-        },
+        intervenes: { include: { speaker: true } },
+        questions: { orderBy: { upvote: 'desc' } },
       },
     });
   },
@@ -95,23 +75,13 @@ export const sessionRepository = {
         id_room: room_id ? parseInt(room_id) : undefined,
         capacity,
         intervenes: speaker_ids
-          ? {
-              create: speaker_ids.map(speakerId => ({
-                id_speaker: parseInt(speakerId),
-              })),
-            }
+          ? { create: speaker_ids.map(speakerId => ({ id_speaker: parseInt(speakerId) })) }
           : undefined,
       },
       include: {
         room: true,
-        intervenes: {
-          include: {
-            speaker: true,
-          },
-        },
-        questions: {
-          orderBy: { upvote_count: 'desc' },
-        },
+        intervenes: { include: { speaker: true } },
+        questions: { orderBy: { upvote: 'desc' } },
       },
     });
   },
@@ -125,7 +95,7 @@ export const sessionRepository = {
   async findQuestionsBySession(sessionId) {
     return prisma.question.findMany({
       where: { id_session: sessionId },
-      orderBy: { upvote_count: 'desc' },
+      orderBy: { upvote: 'desc' },
     });
   },
 
@@ -148,7 +118,7 @@ export const sessionRepository = {
   async upvoteQuestion(questionId) {
     return prisma.question.update({
       where: { id_question: questionId },
-      data: { upvote_count: { increment: 1 } },
+      data: { upvote: { increment: 1 } },
     });
   },
 };

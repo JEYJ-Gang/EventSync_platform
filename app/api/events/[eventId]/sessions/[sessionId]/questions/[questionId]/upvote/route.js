@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { sessionService } from "../../../../../../../../service/session.service";
+import { sessionService } from "@/service/session.service";
+
  
 export async function POST(request, context) {
   try {
